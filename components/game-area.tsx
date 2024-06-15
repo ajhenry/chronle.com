@@ -81,10 +81,14 @@ export function SortableItem(props: {
     <div ref={setNodeRef} style={style}>
       <div
         className={cn(
-          correct ? "bg-success" : "bg-background",
+          correct
+            ? "bg-success"
+            : !moved && !correct && attempt
+            ? "bg-accent"
+            : "bg-background",
           "w-full border-border border-2 rounded-lg flex p-2 space-x-4 touch-manipulation transition duration-500 ease-in-out"
         )}
-        style={{ transitionDelay: moved ? "0" : getDelay(props.order) }}
+        style={{ transitionDelay: attempt ? getDelay(props.order) : "0ms" }}
       >
         <div>
           <Image
@@ -130,15 +134,14 @@ export function GameArea({ day }: GameAreaProps) {
 
   const latestAttempt = attemptData?.[attemptData?.length - 1];
 
-  console.log({ latestAttempt });
-
   const {
     data: submittedSolution,
     isPending: submissionLoading,
     mutate,
   } = trpc.submitSolution.useMutation();
   const loading = submissionLoading || attemptDataLoading;
-  const [items, setItems] = useState<Event[]>(day?.events);
+  const [items, setItems] = useState<Event[]>(day.events);
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -194,11 +197,7 @@ export function GameArea({ day }: GameAreaProps) {
 
       <Button onClick={handleSubmit} disabled={loading} className="w-full mt-4">
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {loading
-          ? "Submitting..."
-          : error
-          ? "Error"
-          : `Submit (${6 - attemptCount} remaining)`}
+        {loading ? "Submitting..." : `Submit (${6 - attemptCount} remaining)`}
       </Button>
     </div>
   );

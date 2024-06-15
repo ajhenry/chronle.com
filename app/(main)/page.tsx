@@ -3,6 +3,7 @@ import { Day, Event } from "@/components/types/types";
 import { Button } from "@/components/ui/button";
 import {
   adminAuth,
+  getLatestSubmittedSolution,
   getToday,
   getUser,
   uploadDays,
@@ -88,11 +89,42 @@ const getUserData = async () => {
   return await getUser(token.uid);
 };
 
+const getLatestSolution = async () => {
+  const cookieStore = cookies();
+  const firebaseAuthToken = cookieStore.get("auth")?.value;
+
+  if (!firebaseAuthToken) {
+    return null;
+  }
+
+  const token = await adminAuth
+    .verifyIdToken(firebaseAuthToken)
+    .catch((error) => {
+      console.log("error verifying id token for initial standing", { error });
+      return null;
+    });
+
+  if (!token) {
+    return null;
+  }
+
+  return await getLatestSubmittedSolution(token.uid);
+};
+
 const Home = async () => {
   const day = await getInitialDay();
   const userData = await getUserData();
+  const latestSolution = await getLatestSolution();
   console.log({ userData });
   console.log({ day });
+  console.log({ latestSolution });
+
+  if (latestSolution) {
+    // Set the order of events based on the last solution submitted
+    day.events = latestSolution.solution.map(
+      (eventId) => day.events.find((event) => event.id === eventId)!
+    );
+  }
 
   return (
     <div className="grow flex flex-col items-center justify-evenly">

@@ -1,6 +1,7 @@
 import { SolutionSchema } from "@/components/types/types";
 import { checkAnswer } from "@/lib/server-firebase";
 import { FieldValue } from "firebase-admin/firestore";
+import KSUID from "ksuid";
 import { procedure, t } from "./server";
 
 export const healthCheckerRouter = t.router({
@@ -15,15 +16,19 @@ export const verifierRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       const { uid } = ctx;
       const timestamp = new Date().toISOString();
+      const attemptId = KSUID.randomSync().string;
 
       const res = await checkAnswer(input.day, input.solution);
 
       // Write to the database for attempts
-      await ctx.db.collection(`attempts/${input.day}/${uid}`).add({
-        solution: input.solution,
-        timestamp,
-        result: res,
-      });
+      await ctx.db
+        .collection(`attempts/${input.day}/${uid}`)
+        .doc(attemptId)
+        .set({
+          solution: input.solution,
+          timestamp,
+          result: res,
+        });
 
       // Now get the standings
       const standings = await ctx.db

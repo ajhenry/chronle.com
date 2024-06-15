@@ -1,4 +1,4 @@
-import { Day, Event, User } from "@/components/types/types";
+import { Attempt, Day, Event, User } from "@/components/types/types";
 import {
   App,
   AppOptions,
@@ -98,6 +98,19 @@ export const uploadDays = async (days: Day[]) => {
   days.forEach(async (day) => {
     await collection.doc(day.day).set(day);
   });
+};
+
+export const getLatestSubmittedSolution = async (uid: string) => {
+  const day = getServerTime();
+  const db = getFirestore(app);
+  const collection = await db.collection(`attempts/${day}/${uid}`).get();
+  const snapshot = collection.docs[collection.docs.length - 1];
+
+  if (!snapshot) {
+    return null;
+  }
+
+  return snapshot.data() as Attempt;
 };
 
 export const checkAnswer = async (date: string, events: string[]) => {
