@@ -1,4 +1,6 @@
 import { FirebaseOptions, initializeApp } from "firebase/app";
+import { connectAuthEmulator, getAuth } from "firebase/auth";
+import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
 
 export const config: FirebaseOptions = {
   apiKey: process.env.NEXT_PUBLIC_API_KEY,
@@ -11,3 +13,11 @@ export const config: FirebaseOptions = {
 };
 
 export const browserApp = initializeApp(config);
+
+if (process.env.NODE_ENV === "development") {
+  const auth = getAuth();
+  const firestore = getFirestore();
+  connectAuthEmulator(auth, "http://127.0.0.1:9099");
+
+  connectFirestoreEmulator(firestore, "localhost", 8080);
+}

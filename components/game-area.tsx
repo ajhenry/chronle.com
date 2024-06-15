@@ -27,7 +27,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { setCookie } from "cookies-next";
 import { getAuth, signInAnonymously } from "firebase/auth";
-import { collection, getFirestore } from "firebase/firestore";
+import { collection, doc, getFirestore, setDoc } from "firebase/firestore";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -213,9 +213,19 @@ export function GameArea({ day }: GameAreaProps) {
   useEffect(() => {
     if (user.status === "success" && !user.data && !user.error) {
       signInAnonymously(auth)
-        .then((data) => {
+        .then(async (data) => {
           console.log(data);
           setCookie("auth", (data.user as any).accessToken);
+
+          await setDoc(
+            doc(collection(getFirestore(browserApp), "users"), data.user.uid),
+            {
+              email: data.user.email,
+              displayName: data.user.displayName,
+              isAnonymous: true,
+            },
+            { merge: true }
+          );
         })
         .catch((error) => {
           console.log("error with sign in", { error });
@@ -239,6 +249,7 @@ export function GameArea({ day }: GameAreaProps) {
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
           modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+          id="game-area"
         >
           <SortableContext items={items} strategy={verticalListSortingStrategy}>
             <div className="space-y-2">

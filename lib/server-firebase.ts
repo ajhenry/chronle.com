@@ -21,6 +21,10 @@ export const config: AppOptions = {
 
 let app: App;
 if (!getApps().length) {
+  if (process.env.NODE_ENV === "development") {
+    process.env["FIRESTORE_EMULATOR_HOST"] = "localhost:8080";
+    process.env["FIREBASE_AUTH_EMULATOR_HOST"] = "localhost:9099";
+  }
   app = initializeApp(config);
 }
 export const adminDB = getFirestore(app!);
@@ -49,6 +53,7 @@ export const createInitialUser = async (uid: string) => {
     displayName: user.displayName ?? null,
     solvedDays: {},
     admin: false,
+    isAnonymous: true,
     stats: {
       totalDays: 0,
     },

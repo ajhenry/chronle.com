@@ -11,9 +11,9 @@ import { ReactNode } from "react";
 const font = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Spanle - A game about knowing dates",
+  title: "Chrondle - A game about knowing dates",
   description:
-    "Spanle. A game about knowing dates of events. Get 6 chances to get the timeline of events right.",
+    "Chrondle. A game about knowing dates of events. Get 6 chances to get the timeline of events right.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

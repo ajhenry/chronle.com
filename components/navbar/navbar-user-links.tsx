@@ -10,7 +10,7 @@ import { useDocumentDataOnce } from "react-firebase-hooks/firestore";
 import { useUser } from "reactfire";
 
 export const NavbarUserLinks: FC = () => {
-  const { data, hasEmitted } = useUser();
+  const { data, status, hasEmitted } = useUser();
   const [userData] = useDocumentDataOnce(
     doc(
       collection(getFirestore(browserApp), "users"),
@@ -18,22 +18,26 @@ export const NavbarUserLinks: FC = () => {
     )
   );
 
-  return (
-    <>
-      {hasEmitted && data && !data.isAnonymous ? (
-        <>
+  console.log("userData", userData);
+
+  if (data && !data.isAnonymous) {
+    return (
+      <div>
+        {userData?.admin && (
           <Link href="/app" className={buttonVariants()}>
             Dashboard
           </Link>
-          <UserNav />
-        </>
-      ) : (
-        <>
-          <Link href="/login" className={buttonVariants()}>
-            Login &rarr;
-          </Link>
-        </>
-      )}
-    </>
+        )}
+        <UserNav />
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <Link href="/login" className={buttonVariants()}>
+        Login &rarr;
+      </Link>
+    </div>
   );
 };

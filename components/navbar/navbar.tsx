@@ -12,7 +12,7 @@ export const NavBar: FC = () => {
             <Link href="/" className="transition-opacity">
               <div className="flex items-center">
                 <span className="text-2xl font-semibold tracking-tighter  mr-6">
-                  Spanle
+                  Chrondle
                 </span>
               </div>
             </Link>

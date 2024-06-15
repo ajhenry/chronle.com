@@ -39,6 +39,7 @@ export const UserSchema = z.object({
   email: z.string().nullable(),
   displayName: z.string().nullable(),
   admin: z.boolean(),
+  isAnonymous: z.boolean(),
   solvedDays: z.record(
     z.string(),
     z.object({

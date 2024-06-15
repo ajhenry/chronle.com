@@ -3,20 +3,10 @@
 import { SignInForm } from "@/components/auth/sign-in-form";
 import { SignUpForm } from "@/components/auth/sign-up-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useUser } from "reactfire";
+import { useState } from "react";
 
 export const AuthCard = () => {
   const [isShowingSignUp, setIsShowingSignUp] = useState<boolean>(false);
-  const { data: user } = useUser();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (user && !user.isAnonymous) {
-      router.push("/app");
-    }
-  }, [user]);
 
   return (
     <>

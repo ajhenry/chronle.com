@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
+import { browserApp } from "@/lib/browser-firebase";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   EmailAuthProvider,
@@ -19,9 +20,10 @@ import {
   createUserWithEmailAndPassword,
   linkWithCredential,
 } from "firebase/auth";
+import { collection, doc, getFirestore, setDoc } from "firebase/firestore";
 import { FC, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useAuth, useUser } from "reactfire";
+import { useAuth } from "reactfire";
 import * as z from "zod";
 
 const formSchema = z.object({
@@ -46,26 +48,40 @@ export const SignUpForm: FC<SignUpFormProps> = ({ onShowLogin, onSignUp }) => {
   });
 
   const auth = useAuth();
-  const userData = useUser();
+  const userData = auth.currentUser;
 
-  const signup = async ({ email, password }: z.infer<typeof formSchema>) => {
+  const signUp = async ({ email, password }: z.infer<typeof formSchema>) => {
     try {
       setIsLoading(true);
 
       const credential = EmailAuthProvider.credential(email, password);
 
       let user: UserCredential;
-      if (auth.currentUser && userData.data?.isAnonymous) {
-        user = await linkWithCredential(auth.currentUser, credential);
-      } else {
-        user = await createUserWithEmailAndPassword(auth, email, password);
+      // First try linking with linkWithCredential, if that fails, sign in with popup
+      try {
+        if (userData && userData.isAnonymous) {
+          user = await linkWithCredential(auth.currentUser, credential);
+        }
+      } catch (err: any) {
+        if (err.message.includes("auth/credential-already-in-use")) {
+          user = await createUserWithEmailAndPassword(auth, email, password);
+        }
       }
 
-      if (user?.user.uid && user.user.email) {
-        // create user in firestore here if you want
-        toast({ title: "Account created!" });
-        onSignUp?.();
-      }
+      // Update user data now
+      await setDoc(
+        doc(collection(getFirestore(browserApp), "users"), user!.user.uid),
+        {
+          email: user!.user.email,
+          displayName: user!.user.displayName,
+          isAnonymous: false,
+        },
+        { merge: true }
+      );
+
+      // create user in firestore here if you want
+      toast({ title: "Account created!" });
+      onSignUp?.();
     } catch (err: any) {
       if ("code" in err && err.code.includes("already")) {
         toast({ title: "User already exists" });
@@ -80,7 +96,7 @@ export const SignUpForm: FC<SignUpFormProps> = ({ onShowLogin, onSignUp }) => {
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(signup)}>
+        <form onSubmit={form.handleSubmit(signUp)}>
           <fieldset disabled={isLoading} className="space-y-4">
             <FormField
               control={form.control}
