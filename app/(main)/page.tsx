@@ -6,7 +6,6 @@ import {
   getLatestSubmittedSolution,
   getToday,
   getUser,
-  uploadDays,
 } from "@/lib/server-firebase";
 import { cookies } from "next/headers";
 import Link from "next/link";
@@ -61,7 +60,8 @@ const uploadDay: Day = {
 };
 
 const getInitialDay = async () => {
-  await uploadDays([uploadDay]);
+  // await uploadDays([uploadDay]);
+
   return await getToday();
 };
 
@@ -111,7 +111,6 @@ const getLatestSolution = async () => {
 
 const Home = async () => {
   const day = await getInitialDay();
-  const userData = await getUserData();
   const latestSolution = await getLatestSolution();
 
   if (latestSolution) {
@@ -123,21 +122,35 @@ const Home = async () => {
 
   return (
     <div className="grow flex flex-col items-center justify-evenly">
-      <GameArea day={day} />
+      {day && <GameArea day={day} />}
+      {!day && (
+        <div className="flex flex-col items-center">
+          <h3 className="max-w-4xl font-heading font-semibold text-3xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tighter">
+            Game Error
+          </h3>
+          <p className="text-center px-12 sm:px-2 mt-2">
+            Looks like there was an error while loading the Chronol, please
+            check back later
+          </p>
+        </div>
+      )}
 
       <section className="space-y-6 mt-12">
         <div className="container flex flex-col items-center gap-8 text-center">
           <h1 className="max-w-4xl font-heading font-semibold text-3xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tighter">
-            Chrondle - A Daily Event Timeline Game
+            Chronle - A Daily Chronological Timeline Game
           </h1>
           <p className="max-w-2xl leading-normal text-muted-foreground sm:text-xl sm:leading-8">
-            Boilerplate &amp; template for React projects using Next.js,
-            shadcn/ui, Tailwind and Firebase...and TypeScript, of course!
+            A daily game where you are given a set of events and need to put
+            them in order of when they happened in the fewest moves possible.
           </p>
           <div className="space-x-4">
             <Link href="/login">
-              <Button size="lg">Call to Action!</Button>
+              <Button size="lg">Login</Button>
             </Link>
+            <p className="text-xs text-muted-foreground mt-2">
+              Save your progress across devices by creating an account
+            </p>
             <Link target="_blank" href="https://github.com/enesien/venefish">
               <Button size="lg" variant="link">
                 View Project on GitHub &rarr;

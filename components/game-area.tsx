@@ -194,6 +194,7 @@ export function GameArea({ day }: GameAreaProps) {
 
   const handleSubmit = () => {
     const solution = items.map((item) => item.id);
+
     mutate({ day: day.day, solution });
   };
 
