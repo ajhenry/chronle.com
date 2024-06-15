@@ -78,11 +78,16 @@ export const getUser = async (uid: string) => {
 export const getToday = async () => {
   const dayTimestamp = getServerTime();
 
-  const db = getFirestore(app);
-  const doc = db.collection("days").doc(dayTimestamp);
-  const snapshot = await doc.get();
+  try {
+    const db = getFirestore(app);
+    const doc = db.collection("days").doc(dayTimestamp);
+    const snapshot = await doc.get();
 
-  return snapshot.data() as Day;
+    return snapshot.data() as Day;
+  } catch (error) {
+    console.error("Error getting today's day", { error });
+    return null;
+  }
 };
 
 export const uploadEvents = async (events: Omit<Event, "id">[]) => {

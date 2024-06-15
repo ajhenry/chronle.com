@@ -113,7 +113,7 @@ const Home = async () => {
   const day = await getInitialDay();
   const latestSolution = await getLatestSolution();
 
-  if (latestSolution) {
+  if (latestSolution && day) {
     // Set the order of events based on the last solution submitted
     day.events = latestSolution.solution.map(
       (eventId) => day.events.find((event) => event.id === eventId)!
