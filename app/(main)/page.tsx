@@ -60,8 +60,6 @@ const uploadDay: Day = {
     .map((event) => event.id),
 };
 
-console.log({ uploadDay });
-
 const getInitialDay = async () => {
   await uploadDays([uploadDay]);
   return await getToday();

@@ -148,7 +148,7 @@ export function GameArea({ day }: GameAreaProps) {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
-  console.log({ attemptData });
+
   const handleSubmit = () => {
     const solution = items.map((item) => item.id);
     mutate({ day: day.day, solution });

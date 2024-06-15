@@ -9,12 +9,9 @@ export const createContext = async () => {
   const cookieStore = cookies();
   const firebaseAuthToken = cookieStore.get("auth")?.value!;
 
-  console.log("fb_auth", firebaseAuthToken);
-
   const uid = await adminAuth
     .verifyIdToken(firebaseAuthToken)
     .then((decodedToken) => {
-      console.log("decodedToken", { decodedToken });
       return decodedToken.uid;
     })
     .catch((error) => {
