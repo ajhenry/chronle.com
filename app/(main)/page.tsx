@@ -125,7 +125,7 @@ const Home = async () => {
       {day && <GameArea day={day} />}
       {!day && (
         <div className="flex flex-col items-center">
-          <h3 className="max-w-4xl font-heading font-semibold text-3xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tighter">
+          <h3 className="max-w-4xl font-heading font-semibold text-2xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tighter">
             Game Error
           </h3>
           <p className="text-center px-12 sm:px-2 mt-2">
