@@ -32,6 +32,7 @@ import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
+import { useUser } from "reactfire";
 import { Button } from "./ui/button";
 
 const getDelay = (order: number) => {
@@ -43,6 +44,7 @@ export function SortableItem(props: {
   event: Event;
   order: number;
   attempt?: Attempt;
+  postGame: boolean;
 }) {
   const [previousIndex, setPreviousIndex] = useState(props.order);
   const [attempt, setAttempt] = useState<Attempt | null>();
@@ -65,12 +67,13 @@ export function SortableItem(props: {
   }, [props.attempt]);
 
   const correct =
-    attempt?.result.correct[props.order] &&
-    attempt.solution[props.order] === props.id &&
-    !moved;
+    (attempt?.result.correct[props.order] &&
+      attempt.solution[props.order] === props.id &&
+      !moved) ||
+    props.postGame;
 
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: props.id });
+    useSortable({ id: props.id, disabled: props.postGame });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -114,23 +117,63 @@ export function SortableItem(props: {
   );
 }
 
+// Returns in milliseconds
+const getTimeTilMidnightUTC = () => {
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0);
+  return tomorrow.getTime() - now.getTime();
+};
+
+const PostGame = (props: { attempts: Attempt[] }) => {
+  const [countdown, setCountdown] = useState(getTimeTilMidnightUTC());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCountdown((countdown) => countdown - 1000);
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  const hours = (countdown / 3.6e6) | 0;
+  const mins = ((countdown % 3.6e6) / 6e4) | 0;
+  const secs = Math.round((countdown % 6e4) / 1e3);
+  function z(n: number) {
+    return (n < 10 ? "0" : "") + n;
+  }
+
+  return (
+    <div className="flex flex-col items-center space-y-4 mb-12 mt-4">
+      <h1 className="text-3xl font-semibold">
+        Next Game in {z(hours)}:{z(mins)}:{z(secs)}
+      </h1>
+      <p className="text-center">
+        You have completed all the challenges for today. Come back tomorrow for
+        more!
+      </p>
+    </div>
+  );
+};
+
 interface GameAreaProps {
   day: Day;
 }
 
 export function GameArea({ day }: GameAreaProps) {
   const auth = getAuth(browserApp);
-  const [attemptData, attemptDataLoading, error] = useCollectionData(
+  const user = useUser();
+  const [attemptData, attemptDataLoading, error] = useCollectionData<Attempt>(
     collection(
       getFirestore(browserApp),
       "attempts",
       day.day,
       auth.currentUser?.uid ?? "__MISSING__"
-    ),
-    {
-      snapshotListenOptions: { includeMetadataChanges: true },
-    }
-  ) as any as [Attempt[], boolean, Error];
+    ) as any
+  );
 
   const latestAttempt = attemptData?.[attemptData?.length - 1];
 
@@ -155,20 +198,39 @@ export function GameArea({ day }: GameAreaProps) {
   };
 
   const attemptCount = attemptData?.length ?? 0;
+  const postGame =
+    attemptCount >= 6 ||
+    Boolean(attemptData?.[attemptCount - 1]?.result.solved);
 
   useEffect(() => {
-    signInAnonymously(auth)
-      .then((data) => {
-        console.log(data);
-        setCookie("auth", (data.user as any).accessToken);
-      })
-      .catch((error) => {
-        console.log("error with sign in", { error });
-      });
-  }, []);
+    if (postGame) {
+      setItems(
+        day.solution.map((eventId) => day.events.find((e) => e.id === eventId)!)
+      );
+    }
+  }, [postGame]);
+
+  useEffect(() => {
+    if (user.status === "success" && !user.data && !user.error) {
+      signInAnonymously(auth)
+        .then((data) => {
+          console.log(data);
+          setCookie("auth", (data.user as any).accessToken);
+        })
+        .catch((error) => {
+          console.log("error with sign in", { error });
+        });
+    }
+
+    if (user.data) {
+      console.log("user data", user.data);
+      setCookie("auth", (user.data as any).accessToken);
+    }
+  }, [user]);
 
   return (
     <div className="md:w-[600px] px-2">
+      {postGame && <PostGame attempts={attemptData ?? []} />}
       <h3 className="text-lg text-center font-medium">{day.description}</h3>
       <p className="text-center text-sm">Oldest event first</p>
       <div className="mt-2">
@@ -187,6 +249,7 @@ export function GameArea({ day }: GameAreaProps) {
                   order={index}
                   event={item}
                   attempt={latestAttempt}
+                  postGame={postGame}
                 />
               ))}
             </div>
@@ -194,11 +257,16 @@ export function GameArea({ day }: GameAreaProps) {
         </DndContext>
       </div>
       <p className="text-center text-sm mt-2">Most recent event last</p>
-
-      <Button onClick={handleSubmit} disabled={loading} className="w-full mt-4">
-        {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {loading ? "Submitting..." : `Submit (${6 - attemptCount} remaining)`}
-      </Button>
+      {!postGame && (
+        <Button
+          onClick={handleSubmit}
+          disabled={loading}
+          className="w-full mt-4"
+        >
+          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {loading ? "Submitting..." : `Submit (${6 - attemptCount} remaining)`}
+        </Button>
+      )}
     </div>
   );
 

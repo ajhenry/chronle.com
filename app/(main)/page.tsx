@@ -113,9 +113,6 @@ const Home = async () => {
   const day = await getInitialDay();
   const userData = await getUserData();
   const latestSolution = await getLatestSolution();
-  console.log({ userData });
-  console.log({ day });
-  console.log({ latestSolution });
 
   if (latestSolution) {
     // Set the order of events based on the last solution submitted

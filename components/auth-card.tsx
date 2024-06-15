@@ -13,10 +13,11 @@ export const AuthCard = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (user) {
+    if (user && !user.isAnonymous) {
       router.push("/app");
     }
   }, [user]);
+
   return (
     <>
       <Card>

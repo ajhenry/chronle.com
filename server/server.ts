@@ -4,7 +4,6 @@ import { cookies } from "next/headers";
 import superjson from "superjson";
 
 export const createContext = async () => {
-  // TODO: Add a session here
   // const session = await getServerSession(opts.req, opts.res, nextAuthOptions)
   const cookieStore = cookies();
   const firebaseAuthToken = cookieStore.get("auth")?.value!;
@@ -21,6 +20,8 @@ export const createContext = async () => {
         message: "Invalid Firebase Auth Token",
       });
     });
+
+  // TODO: fix auth token verification
 
   // See if we need to create a user
   await createInitialUser(uid);

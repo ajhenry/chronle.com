@@ -13,10 +13,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  EmailAuthProvider,
+  UserCredential,
+  createUserWithEmailAndPassword,
+  linkWithCredential,
+} from "firebase/auth";
 import { FC, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useAuth } from "reactfire";
+import { useAuth, useUser } from "reactfire";
 import * as z from "zod";
 
 const formSchema = z.object({
@@ -41,11 +46,21 @@ export const SignUpForm: FC<SignUpFormProps> = ({ onShowLogin, onSignUp }) => {
   });
 
   const auth = useAuth();
+  const userData = useUser();
 
   const signup = async ({ email, password }: z.infer<typeof formSchema>) => {
     try {
       setIsLoading(true);
-      const user = await createUserWithEmailAndPassword(auth, email, password);
+
+      const credential = EmailAuthProvider.credential(email, password);
+
+      let user: UserCredential;
+      if (auth.currentUser && userData.data?.isAnonymous) {
+        user = await linkWithCredential(auth.currentUser, credential);
+      } else {
+        user = await createUserWithEmailAndPassword(auth, email, password);
+      }
+
       if (user?.user.uid && user.user.email) {
         // create user in firestore here if you want
         toast({ title: "Account created!" });

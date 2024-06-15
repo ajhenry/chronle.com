@@ -48,12 +48,11 @@ export const createInitialUser = async (uid: string) => {
     email: user.email ?? null,
     displayName: user.displayName ?? null,
     solvedDays: {},
+    admin: false,
     stats: {
       totalDays: 0,
     },
   };
-
-  console.log({ userData });
 
   const res = await adminDB
     .collection("users")
