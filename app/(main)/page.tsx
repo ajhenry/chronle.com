@@ -55,7 +55,7 @@ const uploadDay: Day = {
   events: events,
   id: "2hqeB0ia52vGLnmSNlvYt5L6Ewh",
   name: "Events",
-  solution: events
+  solution: [...events]
     .sort((a, b) => (a.date! < b.date! ? -1 : a.date! > b.date! ? 1 : 0))
     .map((event) => event.id),
 };

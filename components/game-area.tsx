@@ -1,7 +1,7 @@
 "use client";
 
 import { Attempt, Day, Event } from "@/components/types/types";
-import { browserApp } from "@/lib/browser-firebase";
+import { browserApp, createUserData } from "@/lib/browser-firebase";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/server/trpc";
 import {
@@ -27,7 +27,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { setCookie } from "cookies-next";
 import { getAuth, signInAnonymously } from "firebase/auth";
-import { collection, doc, getFirestore, setDoc } from "firebase/firestore";
+import { collection, getFirestore } from "firebase/firestore";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -214,26 +214,22 @@ export function GameArea({ day }: GameAreaProps) {
     if (user.status === "success" && !user.data && !user.error) {
       signInAnonymously(auth)
         .then(async (data) => {
-          console.log(data);
+          console.log("signed in anonymously", { uid: data.user.uid });
           setCookie("auth", (data.user as any).accessToken);
 
-          await setDoc(
-            doc(collection(getFirestore(browserApp), "users"), data.user.uid),
-            {
-              email: data.user.email,
-              displayName: data.user.displayName,
-              isAnonymous: true,
-            },
-            { merge: true }
-          );
+          await createUserData({
+            uid: data.user.uid,
+            email: data.user.email,
+            displayName: data.user.displayName,
+            isAnonymous: true,
+          });
         })
         .catch((error) => {
-          console.log("error with sign in", { error });
+          console.log("error with anonymous sign in", { error });
         });
     }
 
     if (user.data) {
-      console.log("user data", user.data);
       setCookie("auth", (user.data as any).accessToken);
     }
   }, [user]);

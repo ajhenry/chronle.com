@@ -1,4 +1,4 @@
-import { adminAuth, adminDB, createInitialUser } from "@/lib/server-firebase";
+import { adminAuth, adminDB } from "@/lib/server-firebase";
 import { TRPCError, initTRPC } from "@trpc/server";
 import { cookies } from "next/headers";
 import superjson from "superjson";
@@ -20,11 +20,6 @@ export const createContext = async () => {
         message: "Invalid Firebase Auth Token",
       });
     });
-
-  // TODO: fix auth token verification
-
-  // See if we need to create a user
-  await createInitialUser(uid);
 
   return {
     uid,

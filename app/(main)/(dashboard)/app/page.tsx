@@ -2,7 +2,7 @@ import { DemoDashboard } from "@/components/demo-dashboard/demo-dashboard";
 
 import { adminAuth, adminDB } from "@/lib/server-firebase";
 import { cookies } from "next/headers";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 
 const getUserData = async () => {
   const cookieStore = cookies();
@@ -29,11 +29,12 @@ const getUserData = async () => {
 };
 
 const ApplicationPage = async () => {
-  const router = useRouter();
   const userData = await getUserData();
 
+  console.log("userData", { userData });
+
   if (!userData) {
-    router.replace("/");
+    redirect("/");
   }
 
   return <DemoDashboard />;

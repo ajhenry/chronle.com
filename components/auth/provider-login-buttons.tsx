@@ -2,14 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
-import { browserApp } from "@/lib/browser-firebase";
+import { createUserData } from "@/lib/browser-firebase";
 import {
   GoogleAuthProvider,
   UserCredential,
   linkWithPopup,
   signInWithPopup,
 } from "firebase/auth";
-import { collection, doc, getFirestore, setDoc } from "firebase/firestore";
 import { FC, useState } from "react";
 import { useAuth } from "reactfire";
 
@@ -31,24 +30,25 @@ export const ProviderLoginButtons: FC<Props> = ({ onSignIn }) => {
       // First try linking with popup, if that fails, sign in with popup
       try {
         if (userData && userData.isAnonymous) {
+          console.log("Linking with popup");
           user = await linkWithPopup(userData, provider);
         }
       } catch (err: any) {
         if (err.message.includes("auth/credential-already-in-use")) {
+          console.log("Credential was already in use, signing in with popup");
           user = await signInWithPopup(auth, provider);
         }
       }
 
+      console.log("Signed in from provider login", { uid: user!.user.uid });
+
       // Update user data now
-      await setDoc(
-        doc(collection(getFirestore(browserApp), "users"), user!.user.uid),
-        {
-          email: user!.user.email,
-          displayName: user!.user.displayName,
-          isAnonymous: false,
-        },
-        { merge: true }
-      );
+      await createUserData({
+        uid: user!.user.uid,
+        email: user!.user.email,
+        displayName: user!.user.displayName,
+        isAnonymous: false,
+      });
 
       // create user in your database here
       toast({ title: "Signed in!" });

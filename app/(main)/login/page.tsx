@@ -14,7 +14,6 @@ export default function LoginPage() {
   useEffect(() => {
     // We want the user to be signed in to a real account
     // otherwise they can upgrade
-    console.log("user", user, status, user?.isAnonymous);
     if (user && !user.isAnonymous && status === "success") {
       router.push("/");
     }

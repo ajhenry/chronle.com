@@ -1,6 +1,12 @@
 import { FirebaseOptions, initializeApp } from "firebase/app";
-import { connectAuthEmulator, getAuth } from "firebase/auth";
-import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
+import { User, connectAuthEmulator, getAuth } from "firebase/auth";
+import {
+  collection,
+  connectFirestoreEmulator,
+  doc,
+  getFirestore,
+  setDoc,
+} from "firebase/firestore";
 
 export const config: FirebaseOptions = {
   apiKey: process.env.NEXT_PUBLIC_API_KEY,
@@ -21,3 +27,15 @@ if (process.env.NODE_ENV === "development") {
 
   connectFirestoreEmulator(firestore, "localhost", 8080);
 }
+
+export const createUserData = async (data: Partial<User>) => {
+  await setDoc(
+    doc(collection(getFirestore(browserApp), "users"), data.uid),
+    {
+      ...data,
+    },
+    { merge: true }
+  );
+
+  console.log("createUserData doc set", { data });
+};

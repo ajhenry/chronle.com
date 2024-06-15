@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { browserApp } from "@/lib/browser-firebase";
+import { createUserData } from "@/lib/browser-firebase";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   EmailAuthProvider,
@@ -20,7 +20,6 @@ import {
   createUserWithEmailAndPassword,
   linkWithCredential,
 } from "firebase/auth";
-import { collection, doc, getFirestore, setDoc } from "firebase/firestore";
 import { FC, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "reactfire";
@@ -69,15 +68,12 @@ export const SignUpForm: FC<SignUpFormProps> = ({ onShowLogin, onSignUp }) => {
       }
 
       // Update user data now
-      await setDoc(
-        doc(collection(getFirestore(browserApp), "users"), user!.user.uid),
-        {
-          email: user!.user.email,
-          displayName: user!.user.displayName,
-          isAnonymous: false,
-        },
-        { merge: true }
-      );
+      await createUserData({
+        uid: user!.user.uid,
+        email: user!.user.email,
+        displayName: user!.user.displayName,
+        isAnonymous: false,
+      });
 
       // create user in firestore here if you want
       toast({ title: "Account created!" });
