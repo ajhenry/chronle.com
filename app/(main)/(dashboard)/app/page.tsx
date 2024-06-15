@@ -31,8 +31,6 @@ const getUserData = async () => {
 const ApplicationPage = async () => {
   const userData = await getUserData();
 
-  console.log("userData", { userData });
-
   if (!userData) {
     redirect("/");
   }
