@@ -1,7 +1,6 @@
 import { NavbarMobile } from "@/components/navbar/navbar-mobile";
 import { NavbarUserLinks } from "@/components/navbar/navbar-user-links";
 import { buttonVariants } from "@/components/ui/button";
-import { FishIcon, ScanTextIcon } from "lucide-react";
 import Link from "next/link";
 import { FC } from "react";
 
@@ -13,9 +12,8 @@ export const NavBar: FC = () => {
           <div className="flex items-center">
             <Link href="/" className="hover:opacity-80 transition-opacity">
               <div className="flex items-center">
-                <FishIcon className="w-8 h-8 mr-2 inline" />{" "}
-                <span className="text-xl font-semibold tracking-tighter text-slate-800 mr-6">
-                  Venefish
+                <span className="text-2xl font-semibold tracking-tighter  mr-6">
+                  Spanle
                 </span>
               </div>
             </Link>

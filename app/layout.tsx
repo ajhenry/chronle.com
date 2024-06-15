@@ -1,27 +1,33 @@
-import type { Metadata } from "next";
-import { Work_Sans } from "next/font/google";
 import "@/app/globals.css";
-import { cn } from "@/lib/utils";
 import { MyFirebaseProvider } from "@/components/firebase-providers";
 import { Toaster } from "@/components/ui/toaster";
+import { cn } from "@/lib/utils";
+import { TrpcProvider } from "@/providers/trpc-provider";
+import type { Metadata } from "next";
+import { ThemeProvider } from "next-themes";
+import { Inter } from "next/font/google";
 import { ReactNode } from "react";
 
-const font = Work_Sans({ subsets: ["latin"] });
+const font = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Venefish | Vercel Next.JS Firebase Shadcn/ui Tailwind Boilerplate",
+  title: "Spanle - A game about knowing dates",
   description:
-    "Venefish is a Vercel Next.JS Firebase Shadcn/ui Tailwind Boilerplate project to help you get started with your next project.",
+    "Spanle. A game about knowing dates of events. Get 6 chances to get the timeline of events right.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className={cn(font.className)}>
-        <MyFirebaseProvider>
-          {children}
-          <Toaster />
-        </MyFirebaseProvider>
+      <body className={cn(font.className, "bg-background")}>
+        <ThemeProvider>
+          <MyFirebaseProvider>
+            <TrpcProvider>
+              {children}
+              <Toaster />
+            </TrpcProvider>
+          </MyFirebaseProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

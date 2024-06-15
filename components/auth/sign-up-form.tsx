@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import * as React from "react";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -10,15 +10,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { FC, useState } from "react";
-import { toast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "@/components/ui/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { FC, useState } from "react";
+import { useForm } from "react-hook-form";
 import { useAuth } from "reactfire";
+import * as z from "zod";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -77,9 +76,6 @@ export const SignUpForm: FC<SignUpFormProps> = ({ onShowLogin, onSignUp }) => {
                   <FormControl>
                     <Input type="email" {...field} />
                   </FormControl>
-                  <FormDescription>
-                    A valid email is required to watch locked specials.
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
