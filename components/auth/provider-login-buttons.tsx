@@ -25,6 +25,7 @@ export const ProviderLoginButtons: FC<Props> = ({ onSignIn }) => {
   const doProviderSignIn = async (provider: GoogleAuthProvider) => {
     try {
       setIsLoading(true);
+      console.log("Provider login", { providerId: provider.providerId });
 
       let user: UserCredential;
 
@@ -38,11 +39,13 @@ export const ProviderLoginButtons: FC<Props> = ({ onSignIn }) => {
           console.log("User isn't signed in, signing in with popup");
           user = await signInWithPopup(auth, provider);
         }
-      } catch (err: any) {
-        if (err.message.includes("auth/credential-already-in-use")) {
+      } catch (error: any) {
+        console.log("Error linking with popup", { err: error });
+        if (error.message.includes("auth/credential-already-in-use")) {
           console.log("Credential was already in use, signing in with popup");
           user = await signInWithPopup(auth, provider);
         }
+        throw error;
       }
 
       console.log("Signed in from provider login", { uid: user!.user.uid });

@@ -125,7 +125,7 @@ const Home = async () => {
         </div>
       )}
 
-      <section className="space-y-6 mt-12">
+      <section id="intro" className="space-y-6 mt-12">
         <div className="container flex flex-col items-center gap-8 text-center">
           <h1 className="max-w-4xl font-heading font-semibold text-3xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tighter">
             Chronle - A Daily Chronological Timeline Game
@@ -151,6 +151,42 @@ const Home = async () => {
               </Button>
             </Link>
           </div>
+        </div>
+      </section>
+
+      <section id="about" className="space-y-6 mt-12">
+        <div className="container flex flex-col items-center gap-8 text-center">
+          <h2 className="max-w-4xl font-heading font-semibold text-3xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tighter">
+            Frequent Questions
+          </h2>
+          <h3 className="max-w-4xl font-heading font-semibold text-2xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tighter">
+            How to Play
+          </h3>
+          <p className="max-w-2xl leading-normal sm:text-xl sm:leading-8">
+            Drag the events using the handle (6 dots on the right) to put them
+            in order of when they happened. The top item is the earliest event
+            and the bottom item is the latest event.
+            <br />
+            <br />
+            Submit your solution with the submit button. Correct events will be
+            highlighted in green. Once you get all events correct or run out of
+            moves, the game ends.
+          </p>
+          <h3 className="max-w-4xl font-heading font-semibold text-2xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tighter">
+            What is Chronle?
+          </h3>
+          <p className="max-w-2xl leading-normal sm:text-xl sm:leading-8">
+            Chronle is a daily game where you are given a set of events and need
+            to put them in chronological order. You are given 6 moves to put the
+            events in order.
+          </p>
+          <h3 className="max-w-4xl font-heading font-semibold text-2xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tighter">
+            When does the game reset?
+          </h3>
+          <p className="max-w-2xl leading-normal sm:text-xl sm:leading-8">
+            Every night at midnight UTC the game will reset with a new set of
+            events. You can only play the game once per day.
+          </p>
         </div>
       </section>
     </div>
