@@ -1,4 +1,3 @@
-import { NavbarMobile } from "@/components/navbar/navbar-mobile";
 import { NavbarUserLinks } from "@/components/navbar/navbar-user-links";
 import Link from "next/link";
 import { FC } from "react";
@@ -16,14 +15,11 @@ export const NavBar: FC = () => {
                 </span>
               </div>
             </Link>
-            <div className="hidden md:flex justify-between grow">
+            <div className="flex justify-between grow">
               <div></div>
               <div className="flex items-center space-x-4">
                 <NavbarUserLinks />
               </div>
-            </div>
-            <div className="grow md:hidden flex justify-end">
-              <NavbarMobile />
             </div>
           </div>
         </nav>

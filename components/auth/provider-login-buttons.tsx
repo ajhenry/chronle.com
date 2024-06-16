@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { createUserData } from "@/lib/browser-firebase";
+import { setCookie } from "cookies-next";
 import {
   GoogleAuthProvider,
   UserCredential,
@@ -32,6 +33,10 @@ export const ProviderLoginButtons: FC<Props> = ({ onSignIn }) => {
         if (userData && userData.isAnonymous) {
           console.log("Linking with popup");
           user = await linkWithPopup(userData, provider);
+        } else {
+          // This can happen when the game area doesn't load the anon user
+          console.log("User isn't signed in, signing in with popup");
+          user = await signInWithPopup(auth, provider);
         }
       } catch (err: any) {
         if (err.message.includes("auth/credential-already-in-use")) {
@@ -40,7 +45,7 @@ export const ProviderLoginButtons: FC<Props> = ({ onSignIn }) => {
         }
       }
 
-      console.log("Signed in from provider login", { uid: user!.user.uid });
+      console.log("Signed in from provider login", { uid: user });
 
       // Update user data now
       await createUserData({
@@ -49,6 +54,9 @@ export const ProviderLoginButtons: FC<Props> = ({ onSignIn }) => {
         displayName: user!.user.displayName,
         isAnonymous: false,
       });
+
+      // Need to set the auth cookie too
+      setCookie("auth", (user!.user as any).accessToken);
 
       // create user in your database here
       toast({ title: "Signed in!" });

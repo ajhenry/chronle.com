@@ -1,4 +1,4 @@
-import { DemoDashboard } from "@/components/demo-dashboard/demo-dashboard";
+import { Dashboard } from "@/components/demo-dashboard/demo-dashboard";
 
 import { adminAuth, adminDB } from "@/lib/server-firebase";
 import { cookies } from "next/headers";
@@ -35,6 +35,6 @@ const ApplicationPage = async () => {
     redirect("/");
   }
 
-  return <DemoDashboard />;
+  return <Dashboard />;
 };
 export default ApplicationPage;

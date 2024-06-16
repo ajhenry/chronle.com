@@ -5,6 +5,7 @@ export const EventSchema = z.object({
   name: z.string(),
   image: z.string(),
   date: z.string().optional(),
+  categories: z.array(z.string()).optional(),
 });
 
 export type Event = z.infer<typeof EventSchema>;

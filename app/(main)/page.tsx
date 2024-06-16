@@ -129,7 +129,7 @@ const Home = async () => {
             Game Error
           </h3>
           <p className="text-center px-12 sm:px-2 mt-2">
-            Looks like there was an error while loading the Chronol, please
+            Looks like there was an error while loading the Chronle, please
             check back later
           </p>
         </div>
@@ -151,7 +151,11 @@ const Home = async () => {
             <p className="text-xs text-muted-foreground mt-2">
               Save your progress across devices by creating an account
             </p>
-            <Link target="_blank" href="https://github.com/enesien/venefish">
+            <Link
+              target="_blank"
+              href="https://github.com/ajhenry/chronle"
+              rel="noopener noreferrer"
+            >
               <Button size="lg" variant="link">
                 View Project on GitHub &rarr;
               </Button>

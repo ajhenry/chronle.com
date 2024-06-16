@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
-import * as React from "react";
+import { ModalForgotPassword } from "@/components/auth/modal-forgot-password";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -9,16 +10,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { FC, useState } from "react";
-import { toast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "reactfire";
+import { toast } from "@/components/ui/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { setCookie } from "cookies-next";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { ModalForgotPassword } from "@/components/auth/modal-forgot-password";
+import { FC, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useAuth } from "reactfire";
+import * as z from "zod";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -46,7 +46,12 @@ export const SignInForm: FC<SignInFormProps> = ({ onShowSignUp }) => {
   const login = async ({ email, password }: z.infer<typeof formSchema>) => {
     try {
       setIsLoading(true);
-      await signInWithEmailAndPassword(auth, email, password);
+
+      const user = await signInWithEmailAndPassword(auth, email, password);
+
+      // Need to set the auth cookie too
+      setCookie("auth", (user!.user as any).accessToken);
+
       toast({
         title: "Success!",
         description: "You have been signed in.",

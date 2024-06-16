@@ -33,7 +33,7 @@ export const NavbarUserLinks: FC = () => {
 
   return (
     <div>
-      <Link href="/login" className={buttonVariants()}>
+      <Link href="/login" className={buttonVariants({ size: "sm" })}>
         Login &rarr;
       </Link>
     </div>

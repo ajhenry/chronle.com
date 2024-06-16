@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { createUserData } from "@/lib/browser-firebase";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { setCookie } from "cookies-next";
 import {
   EmailAuthProvider,
   UserCredential,
@@ -74,6 +75,9 @@ export const SignUpForm: FC<SignUpFormProps> = ({ onShowLogin, onSignUp }) => {
         displayName: user!.user.displayName,
         isAnonymous: false,
       });
+
+      // Need to set the auth cookie too
+      setCookie("auth", (user!.user as any).accessToken);
 
       // create user in firestore here if you want
       toast({ title: "Account created!" });
