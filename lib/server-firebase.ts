@@ -68,7 +68,7 @@ export const createInitialUser = async (uid: string) => {
 };
 
 export const getUser = async (uid: string) => {
-  const db = getFirestore(app);
+  const db = adminDB;
   const doc = db.collection("users").doc(uid);
   const snapshot = await doc.get();
 
@@ -76,10 +76,13 @@ export const getUser = async (uid: string) => {
 };
 
 export const getToday = async () => {
+  console.log("init getToday");
   const dayTimestamp = getServerTime();
 
+  console.log("dayTimestamp", { dayTimestamp });
+
   try {
-    const db = getFirestore(app);
+    const db = adminDB;
     const doc = db.collection("days").doc(dayTimestamp);
     const snapshot = await doc.get();
 
@@ -91,7 +94,7 @@ export const getToday = async () => {
 };
 
 export const uploadEvents = async (events: Omit<Event, "id">[]) => {
-  const db = getFirestore(app);
+  const db = adminDB;
   const collection = db.collection("events");
   const uid = KSUID.randomSync().toString();
 
@@ -101,7 +104,7 @@ export const uploadEvents = async (events: Omit<Event, "id">[]) => {
 };
 
 export const uploadDays = async (days: Day[]) => {
-  const db = getFirestore(app);
+  const db = adminDB;
   const collection = db.collection("days");
 
   days.forEach(async (day) => {
@@ -111,7 +114,7 @@ export const uploadDays = async (days: Day[]) => {
 
 export const getLatestSubmittedSolution = async (uid: string) => {
   const day = getServerTime();
-  const db = getFirestore(app);
+  const db = adminDB;
   const collection = await db.collection(`attempts/${day}/${uid}`).get();
   const snapshot = collection.docs[collection.docs.length - 1];
 
@@ -123,7 +126,7 @@ export const getLatestSubmittedSolution = async (uid: string) => {
 };
 
 export const checkAnswer = async (date: string, events: string[]) => {
-  const db = getFirestore(app);
+  const db = adminDB;
   const doc = db.collection("days").doc(date);
   const snapshot = await doc.get();
 
