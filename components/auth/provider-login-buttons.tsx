@@ -45,7 +45,7 @@ export const ProviderLoginButtons: FC<Props> = ({ onSignIn }) => {
         }
       }
 
-      console.log("Signed in from provider login", { uid: user });
+      console.log("Signed in from provider login", { uid: user!.user.uid });
 
       // Update user data now
       await createUserData({
