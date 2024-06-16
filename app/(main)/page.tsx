@@ -5,7 +5,6 @@ import {
   adminAuth,
   getLatestSubmittedSolution,
   getToday,
-  getUser,
 } from "@/lib/server-firebase";
 import { cookies } from "next/headers";
 import Link from "next/link";
@@ -60,41 +59,26 @@ const uploadDay: Day = {
 };
 
 const getInitialDay = async () => {
+  console.log("Getting initial day");
   // await uploadDays([uploadDay]);
 
-  return await getToday();
-};
+  const day = await getToday();
+  console.log("fetched day", { day });
 
-const getUserData = async () => {
-  const cookieStore = cookies();
-  const firebaseAuthToken = cookieStore.get("auth")?.value;
-
-  if (!firebaseAuthToken) {
-    return null;
-  }
-
-  const token = await adminAuth
-    .verifyIdToken(firebaseAuthToken)
-    .catch((error) => {
-      console.log("error verifying id token for initial standing", { error });
-      return null;
-    });
-
-  if (!token) {
-    return null;
-  }
-
-  return await getUser(token.uid);
+  return day;
 };
 
 const getLatestSolution = async () => {
+  console.log("Getting latest solution");
   const cookieStore = cookies();
   const firebaseAuthToken = cookieStore.get("auth")?.value;
 
   if (!firebaseAuthToken) {
+    console.log("no auth token found for initial standing");
     return null;
   }
 
+  console.log("verifying id token for initial standing");
   const token = await adminAuth
     .verifyIdToken(firebaseAuthToken)
     .catch((error) => {
@@ -103,10 +87,16 @@ const getLatestSolution = async () => {
     });
 
   if (!token) {
+    console.log("no token found for initial standing");
     return null;
   }
 
-  return await getLatestSubmittedSolution(token.uid);
+  console.log("fetching latest solution for initial standing");
+  const data = await getLatestSubmittedSolution(token.uid);
+
+  console.log("fetched latest solution", { data });
+
+  return data;
 };
 
 const Home = async () => {
