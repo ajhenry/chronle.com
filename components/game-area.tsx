@@ -1,6 +1,6 @@
 "use client";
 
-import { Attempt, Day, Event } from "@/components/types/types";
+import { Attempt, Day, Event, User } from "@/components/types/types";
 import { browserApp, createUserData } from "@/lib/browser-firebase";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/server/trpc";
@@ -27,11 +27,14 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { setCookie } from "cookies-next";
 import { getAuth, signInAnonymously } from "firebase/auth";
-import { collection, getFirestore } from "firebase/firestore";
+import { collection, doc, getFirestore } from "firebase/firestore";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { useCollectionData } from "react-firebase-hooks/firestore";
+import {
+  useCollectionData,
+  useDocumentDataOnce,
+} from "react-firebase-hooks/firestore";
 import { useUser } from "reactfire";
 import { Button } from "./ui/button";
 
@@ -72,6 +75,11 @@ export function SortableItem(props: {
       !moved) ||
     props.postGame;
 
+  const formatDate = (date: string) => {
+    const d = new Date(date);
+    return d.toLocaleDateString();
+  };
+
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: props.id, disabled: props.postGame });
 
@@ -102,8 +110,11 @@ export function SortableItem(props: {
             className="object-cover h-12 w-16 rounded-lg"
           />
         </div>
-        <div className="w-full flex items-center h-12">
+        <div className="w-full flex justify-center min-h-12 flex-col">
           <p>{props.event.name}</p>
+          {props.postGame && (
+            <p className="">{formatDate(props.event.date!)}</p>
+          )}
         </div>
         <div
           className="w-10 flex items-center justify-center touch-none"
@@ -126,7 +137,15 @@ const getTimeTilMidnightUTC = () => {
   return tomorrow.getTime() - now.getTime();
 };
 
-const PostGame = (props: { attempts: Attempt[] }) => {
+const PostGame = (props: { attempts: Attempt[]; isWinner: boolean }) => {
+  const user = useUser();
+
+  const [userData] = useDocumentDataOnce<User>(
+    doc(
+      collection(getFirestore(browserApp), "users"),
+      user.data?.uid ?? "__MISSING__"
+    ) as any
+  );
   const [countdown, setCountdown] = useState(getTimeTilMidnightUTC());
 
   useEffect(() => {
@@ -149,12 +168,18 @@ const PostGame = (props: { attempts: Attempt[] }) => {
   return (
     <div className="flex flex-col items-center space-y-4 mb-12 mt-4">
       <h1 className="text-3xl font-semibold">
-        Next Game in {z(hours)}:{z(mins)}:{z(secs)}
+        {props.isWinner ? "Congrats" : "Nice Try"}
       </h1>
+      <h2 className="text-2xl font-semibold">
+        Next Game in {z(hours)}:{z(mins)}:{z(secs)}
+      </h2>
       <p className="text-center">
         You have completed all the challenges for today. Come back tomorrow for
         more!
       </p>
+      <div>
+        <span>{userData?.stats.totalDays}</span>
+      </div>
     </div>
   );
 };
@@ -199,9 +224,9 @@ export function GameArea({ day }: GameAreaProps) {
   };
 
   const attemptCount = attemptData?.length ?? 0;
+  const isWinner = Boolean(attemptCount <= 6);
   const postGame =
-    attemptCount >= 6 ||
-    Boolean(attemptData?.[attemptCount - 1]?.result.solved);
+    attemptCount > 6 || Boolean(attemptData?.[attemptCount - 1]?.result.solved);
 
   useEffect(() => {
     if (postGame) {
@@ -237,7 +262,9 @@ export function GameArea({ day }: GameAreaProps) {
 
   return (
     <div className="md:w-[600px] px-2">
-      {postGame && <PostGame attempts={attemptData ?? []} />}
+      {postGame && (
+        <PostGame attempts={attemptData ?? []} isWinner={isWinner} />
+      )}
       <h3 className="text-lg text-center font-medium">{day.description}</h3>
       <p className="text-center text-sm">Oldest event first</p>
       <div className="mt-2">

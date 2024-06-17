@@ -4,8 +4,12 @@ export const EventSchema = z.object({
   id: z.string(),
   name: z.string(),
   image: z.string(),
-  date: z.string().optional(),
+  date: z.string(),
   categories: z.array(z.string()).optional(),
+  imageCredit: z.object({
+    name: z.string(),
+    url: z.string(),
+  }),
 });
 
 export type Event = z.infer<typeof EventSchema>;
@@ -15,14 +19,7 @@ export const DaySchema = z.object({
   day: z.string(),
   name: z.string(),
   description: z.string(),
-  events: z.array(
-    z.object({
-      id: z.string(),
-      name: z.string(),
-      image: z.string(),
-      date: z.string().optional(),
-    })
-  ),
+  events: z.array(EventSchema),
   solution: z.array(z.string()),
 });
 

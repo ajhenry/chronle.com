@@ -36,8 +36,10 @@ export const verifierRouter = t.router({
         .collection(`attempts/${input.day}/${uid}`)
         .get();
 
+      const metricsDay = standings.size > 5 ? 6 : standings.size;
+
       // Increment their stats for their profile
-      if (res.solved) {
+      if (res.solved || standings.size > 5) {
         await ctx.db
           .collection("users")
           .doc(uid)
@@ -50,6 +52,9 @@ export const verifierRouter = t.router({
                   timestamp,
                   attempts: standings.size,
                 },
+              },
+              solvedMetrics: {
+                [metricsDay]: FieldValue.increment(1),
               },
             },
             { merge: true }
