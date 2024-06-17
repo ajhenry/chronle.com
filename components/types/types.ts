@@ -47,6 +47,7 @@ export const UserSchema = z.object({
   ),
   stats: z.object({
     totalDays: z.number(),
+    solvedMetrics: z.record(z.string(), z.number()),
   }),
 });
 

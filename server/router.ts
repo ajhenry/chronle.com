@@ -45,16 +45,18 @@ export const verifierRouter = t.router({
           .doc(uid)
           .set(
             {
-              stats: { totalDays: FieldValue.increment(1) },
+              stats: {
+                totalDays: FieldValue.increment(1),
+                solvedMetrics: {
+                  [metricsDay]: FieldValue.increment(1),
+                },
+              },
               solvedDays: {
                 [input.day]: {
                   solved: true,
                   timestamp,
                   attempts: standings.size,
                 },
-              },
-              solvedMetrics: {
-                [metricsDay]: FieldValue.increment(1),
               },
             },
             { merge: true }

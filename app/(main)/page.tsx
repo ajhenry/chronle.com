@@ -16,6 +16,10 @@ const events: Event[] = [
     image:
       "https://images.unsplash.com/photo-1626094309830-abbb0c99da4a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8ZG9udXR8ZW58MHx8MHx8fDA%3D",
     date: "1937-07-13",
+    imageCredit: {
+      name: "Billy Bob",
+      url: "https://unsplash.com/@billybob",
+    },
   },
   {
     id: "2hqeB0O8GjkUAE7JEC2OypmhU13",
@@ -23,6 +27,10 @@ const events: Event[] = [
     image:
       "https://images.unsplash.com/photo-1617415420840-48518720fe26?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     date: "1783-11-21",
+    imageCredit: {
+      name: "Billy Bob",
+      url: "https://unsplash.com/@billybob",
+    },
   },
   {
     id: "2hqeB0ia52vGLnmSNlvYt5L6Ewh",
@@ -30,6 +38,10 @@ const events: Event[] = [
     image:
       "https://images.unsplash.com/photo-1519407451944-22e820099775?q=80&w=1738&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     date: "2016-11-02",
+    imageCredit: {
+      name: "Billy Bob",
+      url: "https://unsplash.com/@billybob",
+    },
   },
   {
     id: "2hqeB0ia52vGLnmSNlvYt5L6Ezh",
@@ -37,6 +49,10 @@ const events: Event[] = [
     image:
       "https://images.unsplash.com/photo-1583683433877-042a75ba47e3?q=80&w=2698&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     date: "2005-06-09",
+    imageCredit: {
+      name: "Billy Bob",
+      url: "https://unsplash.com/@billybob",
+    },
   },
   {
     id: "2hqeB0ia52vGLnmSNlvYv5L6Ezh",
@@ -44,6 +60,10 @@ const events: Event[] = [
     image:
       "https://images.unsplash.com/photo-1564470939458-1289338e2d85?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     date: "2017-09-18",
+    imageCredit: {
+      name: "Billy Bob",
+      url: "https://unsplash.com/@billybob",
+    },
   },
 ];
 
@@ -61,8 +81,6 @@ const uploadDay: Day = {
 const getInitialDay = async () => {
   console.log("Getting initial day");
   // await uploadDays([uploadDay]);
-
-  console.log("uploaded day", { uploadDay });
 
   const day = await getToday();
   console.log("fetched day", { day });

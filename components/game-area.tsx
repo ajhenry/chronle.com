@@ -30,6 +30,7 @@ import { getAuth, signInAnonymously } from "firebase/auth";
 import { collection, doc, getFirestore } from "firebase/firestore";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
+import pluralize from "pluralize";
 import { useEffect, useState } from "react";
 import {
   useCollectionData,
@@ -165,6 +166,31 @@ const PostGame = (props: { attempts: Attempt[]; isWinner: boolean }) => {
     return (n < 10 ? "0" : "") + n;
   }
 
+  const getWidthStyle = (size: number) =>
+    ({ "--size": size } as React.CSSProperties);
+
+  const totalSolved = Object.values(userData?.stats.solvedMetrics ?? {}).reduce(
+    (acc, curr) => acc + curr,
+    0
+  );
+
+  const getSolvedRatio = (s: number) => {
+    if (!userData?.stats.solvedMetrics?.[s]) {
+      return 0.1;
+    }
+
+    const data = Math.min(
+      userData.stats.solvedMetrics[s] / totalSolved + 0.1,
+      1
+    );
+
+    return data;
+  };
+
+  const getSolvedDayCount = (s: number) => {
+    return userData?.stats.solvedMetrics?.[s] ?? "";
+  };
+
   return (
     <div className="flex flex-col items-center space-y-4 mb-12 mt-4">
       <h1 className="text-3xl font-semibold">
@@ -178,7 +204,57 @@ const PostGame = (props: { attempts: Attempt[]; isWinner: boolean }) => {
         more!
       </p>
       <div>
-        <span>{userData?.stats.totalDays}</span>
+        <h3 className="text-center text-xl font-semibold">Your Stats</h3>
+        <div className="mx-auto w-[200px] mt-2">
+          <table className="charts-css bar show-labels show-primary-axis labels-align-inline-center">
+            <tbody>
+              <tr className="ml-2">
+                <th scope="row" className="mr-2">
+                  1
+                </th>
+                <td style={getWidthStyle(getSolvedRatio(1))}>
+                  {getSolvedDayCount(1)}
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">2</th>
+                <td style={getWidthStyle(getSolvedRatio(2))}>
+                  {getSolvedDayCount(2)}
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">3</th>
+                <td style={getWidthStyle(getSolvedRatio(3))}>
+                  {getSolvedDayCount(3)}
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">4</th>
+                <td style={getWidthStyle(getSolvedRatio(4))}>
+                  {getSolvedDayCount(4)}
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">5</th>
+                <td style={getWidthStyle(getSolvedRatio(5))}>
+                  {getSolvedDayCount(5)}
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">6+</th>
+                <td style={getWidthStyle(getSolvedRatio(6))}>
+                  <p className="absolute left-0 ml-[105%] w-full">
+                    {getSolvedDayCount(6)}
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p className="mt-2 text-center">
+          {userData?.stats.totalDays}{" "}
+          {pluralize("day", userData?.stats.totalDays)} completed
+        </p>
       </div>
     </div>
   );

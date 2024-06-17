@@ -3,6 +3,7 @@ import { MyFirebaseProvider } from "@/components/firebase-providers";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 import { TrpcProvider } from "@/providers/trpc-provider";
+import "charts.css";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { Inter } from "next/font/google";
