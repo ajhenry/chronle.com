@@ -102,8 +102,10 @@ const getLatestSolution = async () => {
 };
 
 const Home = async () => {
-  const day = await getInitialDay();
-  const latestSolution = await getLatestSolution();
+  const [day, latestSolution] = await Promise.all([
+    getInitialDay(),
+    getLatestSolution(),
+  ]);
 
   if (latestSolution && day) {
     // Set the order of events based on the last solution submitted
