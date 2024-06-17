@@ -56,6 +56,7 @@ export const createInitialUser = async (uid: string) => {
     isAnonymous: true,
     stats: {
       totalDays: 0,
+      solvedMetrics: {},
     },
   };
 

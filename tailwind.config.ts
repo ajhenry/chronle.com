@@ -15,7 +15,31 @@ module.exports = {
         "2xl": "1400px",
       },
     },
+
     extend: {
+      typography: {
+        DEFAULT: {
+          // this is for prose class
+          css: {
+            [[
+              '[class~="lead"]',
+              "strong",
+              "ol > li::before",
+              "blockquote",
+              "h1",
+              "h2",
+              "h3",
+              "h4",
+              "figure figcaption",
+              "code",
+              "a code",
+              "thead",
+            ].join(", ")]: {
+              color: "inherit",
+            },
+          },
+        },
+      },
       delay: {
         100: "100ms",
         200: "200ms",

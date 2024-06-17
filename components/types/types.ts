@@ -5,7 +5,8 @@ export const EventSchema = z.object({
   name: z.string(),
   image: z.string(),
   date: z.string(),
-  categories: z.array(z.string()).optional(),
+  categories: z.array(z.string()),
+  topic: z.string(),
   imageCredit: z.object({
     name: z.string(),
     url: z.string(),

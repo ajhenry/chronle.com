@@ -1,4 +1,4 @@
-import { Dashboard } from "@/components/dashboard/day-dashboard";
+import { EventsDashboard } from "@/components/dashboard/event-dashboard";
 
 import { adminAuth, adminDB } from "@/lib/server-firebase";
 import { cookies } from "next/headers";
@@ -9,7 +9,6 @@ const getUserData = async () => {
   const firebaseAuthToken = cookieStore.get("auth")?.value;
 
   if (!firebaseAuthToken) {
-    console.log("no user token available for dashboard user data page");
     return null;
   }
 
@@ -36,6 +35,6 @@ const ApplicationPage = async () => {
     redirect("/");
   }
 
-  return <Dashboard />;
+  return <EventsDashboard />;
 };
 export default ApplicationPage;

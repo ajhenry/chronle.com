@@ -1,5 +1,11 @@
-import { Day, DaySchema, SolutionSchema } from "@/components/types/types";
+import {
+  Day,
+  DaySchema,
+  EventSchema,
+  SolutionSchema,
+} from "@/components/types/types";
 import { checkAnswer } from "@/lib/server-firebase";
+import { getImageFromTopic } from "@/lib/unsplash";
 import { FieldValue } from "firebase-admin/firestore";
 import KSUID from "ksuid";
 import { z } from "zod";
@@ -108,6 +114,85 @@ export const adminRouter = t.router({
       const daysCreated = await Promise.all(days);
 
       return daysCreated;
+    }),
+  uploadEvents: procedure
+    .input(z.array(EventSchema))
+    .mutation(async ({ input, ctx }) => {
+      const currentMeta = await ctx.db.collection("meta").doc("events").get();
+      const currentCount = currentMeta.data()?.count || 0;
+      let addedCount = 0;
+
+      try {
+        for (const event of input) {
+          const inputEvent = {
+            ...event,
+            id: KSUID.randomSync().string,
+          };
+          // We need to get an image from unsplash
+          let img = await getImageFromTopic(inputEvent.topic);
+
+          if (!img) {
+            console.error("No image found for topic, trying category instead", {
+              topic: inputEvent.topic,
+              category: inputEvent.categories[0],
+            });
+
+            img = await getImageFromTopic(inputEvent.categories[0]);
+          }
+
+          if (!img) {
+            console.error(
+              "No image found for category either, skipping event",
+              {
+                topic: inputEvent.topic,
+                category: inputEvent.categories[0],
+              }
+            );
+
+            continue;
+          }
+
+          console.log("Got image", { ...img });
+
+          const eventWithImage = {
+            ...inputEvent,
+            imageCredit: {
+              name: img.name,
+              url: img.unsplashProfile,
+            },
+            image: img.url,
+          };
+
+          console.log("Uploading event", { eventWithImage });
+
+          await ctx.db
+            .collection("events")
+            .doc(String(currentCount + addedCount + 1))
+            .set(eventWithImage);
+
+          addedCount++;
+
+          console.log("Uploaded event and incremented count", {
+            addedCount,
+            totalCount: currentCount + addedCount + 1,
+          });
+        }
+      } catch (error) {
+        console.error("Error uploading events", { error });
+        console.log("Setting count to the new count", {
+          currentCount,
+          addedCount,
+        });
+      }
+
+      await ctx.db
+        .collection("meta")
+        .doc("events")
+        .set({
+          count: FieldValue.increment(addedCount),
+        });
+
+      return { addedCount };
     }),
 });
 

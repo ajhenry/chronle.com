@@ -169,10 +169,9 @@ const PostGame = (props: { attempts: Attempt[]; isWinner: boolean }) => {
   const getWidthStyle = (size: number) =>
     ({ "--size": size } as React.CSSProperties);
 
-  const totalSolved = Object.values(userData?.stats.solvedMetrics ?? {}).reduce(
-    (acc, curr) => acc + curr,
-    0
-  );
+  const highestTotalSolved = Object.values(
+    userData?.stats.solvedMetrics ?? {}
+  ).reduce((acc, curr) => Math.max(acc, curr), 0);
 
   const getSolvedRatio = (s: number) => {
     if (!userData?.stats.solvedMetrics?.[s]) {
@@ -180,7 +179,7 @@ const PostGame = (props: { attempts: Attempt[]; isWinner: boolean }) => {
     }
 
     const data = Math.min(
-      userData.stats.solvedMetrics[s] / totalSolved + 0.1,
+      userData.stats.solvedMetrics[s] / highestTotalSolved + 0.1,
       1
     );
 
@@ -188,7 +187,7 @@ const PostGame = (props: { attempts: Attempt[]; isWinner: boolean }) => {
   };
 
   const getSolvedDayCount = (s: number) => {
-    return userData?.stats.solvedMetrics?.[s] ?? "";
+    return userData?.stats.solvedMetrics?.[s] ?? "0";
   };
 
   return (
@@ -205,7 +204,7 @@ const PostGame = (props: { attempts: Attempt[]; isWinner: boolean }) => {
       </p>
       <div>
         <h3 className="text-center text-xl font-semibold">Your Stats</h3>
-        <div className="mx-auto w-[200px] mt-2">
+        <div id="stats" className="mx-auto w-[250px] mt-2">
           <table className="charts-css bar show-labels show-primary-axis labels-align-inline-center">
             <tbody>
               <tr className="ml-2">
@@ -213,31 +212,41 @@ const PostGame = (props: { attempts: Attempt[]; isWinner: boolean }) => {
                   1
                 </th>
                 <td style={getWidthStyle(getSolvedRatio(1))}>
-                  {getSolvedDayCount(1)}
+                  <p className="absolute left-0 ml-[105%] w-full">
+                    {getSolvedDayCount(1)}
+                  </p>
                 </td>
               </tr>
               <tr>
                 <th scope="row">2</th>
                 <td style={getWidthStyle(getSolvedRatio(2))}>
-                  {getSolvedDayCount(2)}
+                  <p className="absolute left-0 ml-[105%] w-full">
+                    {getSolvedDayCount(2)}
+                  </p>
                 </td>
               </tr>
               <tr>
                 <th scope="row">3</th>
                 <td style={getWidthStyle(getSolvedRatio(3))}>
-                  {getSolvedDayCount(3)}
+                  <p className="absolute left-0 ml-[105%] w-full">
+                    {getSolvedDayCount(3)}
+                  </p>
                 </td>
               </tr>
               <tr>
                 <th scope="row">4</th>
                 <td style={getWidthStyle(getSolvedRatio(4))}>
-                  {getSolvedDayCount(4)}
+                  <p className="absolute left-0 ml-[105%] w-full">
+                    {getSolvedDayCount(4)}
+                  </p>
                 </td>
               </tr>
               <tr>
                 <th scope="row">5</th>
                 <td style={getWidthStyle(getSolvedRatio(5))}>
-                  {getSolvedDayCount(5)}
+                  <p className="absolute left-0 ml-[105%] w-full">
+                    {getSolvedDayCount(5)}
+                  </p>
                 </td>
               </tr>
               <tr>

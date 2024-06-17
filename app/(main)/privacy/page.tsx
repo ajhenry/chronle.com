@@ -1,6 +1,6 @@
 const PrivacyPage = () => {
   return (
-    <div className="prose lg:prose-xl container mt-4">
+    <div className="prose lg:prose-xl container mt-4 text-foreground">
       <h1 id="introduction">Privacy Policy</h1>
       <p>
         This policy outlines how we collect, use, and protect the information
