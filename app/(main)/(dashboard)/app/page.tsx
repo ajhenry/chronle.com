@@ -1,4 +1,4 @@
-import { Dashboard } from "@/components/demo-dashboard/demo-dashboard";
+import { Dashboard } from "@/components/dashboard/dashboard";
 
 import { adminAuth, adminDB } from "@/lib/server-firebase";
 import { cookies } from "next/headers";

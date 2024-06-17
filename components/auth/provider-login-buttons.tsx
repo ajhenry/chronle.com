@@ -11,7 +11,7 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { FC, useState } from "react";
-import { useAuth } from "reactfire";
+import { useAuth, useUser } from "reactfire";
 
 interface Props {
   onSignIn?: () => void;
@@ -19,7 +19,7 @@ interface Props {
 
 export const ProviderLoginButtons: FC<Props> = ({ onSignIn }) => {
   const auth = useAuth();
-  const userData = auth.currentUser;
+  const { data: userData } = useUser();
   const [isLoading, setIsLoading] = useState(false);
 
   const doProviderSignIn = async (provider: GoogleAuthProvider) => {

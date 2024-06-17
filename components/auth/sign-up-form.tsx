@@ -23,7 +23,7 @@ import {
 } from "firebase/auth";
 import { FC, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useAuth } from "reactfire";
+import { useAuth, useUser } from "reactfire";
 import * as z from "zod";
 
 const formSchema = z.object({
@@ -48,7 +48,7 @@ export const SignUpForm: FC<SignUpFormProps> = ({ onShowLogin, onSignUp }) => {
   });
 
   const auth = useAuth();
-  const userData = auth.currentUser;
+  const { data: userData } = useUser();
 
   const signUp = async ({ email, password }: z.infer<typeof formSchema>) => {
     try {
@@ -60,7 +60,7 @@ export const SignUpForm: FC<SignUpFormProps> = ({ onShowLogin, onSignUp }) => {
       // First try linking with linkWithCredential, if that fails, sign in with popup
       try {
         if (userData && userData.isAnonymous) {
-          user = await linkWithCredential(auth.currentUser, credential);
+          user = await linkWithCredential(userData, credential);
         }
       } catch (err: any) {
         if (err.message.includes("auth/credential-already-in-use")) {

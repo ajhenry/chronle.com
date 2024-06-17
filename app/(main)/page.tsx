@@ -48,7 +48,7 @@ const events: Event[] = [
 ];
 
 const uploadDay: Day = {
-  day: "2024-06-15",
+  day: "2024-06-17",
   description: "Put the items in order",
   events: events,
   id: "2hqeB0ia52vGLnmSNlvYt5L6Ewh",
@@ -61,6 +61,8 @@ const uploadDay: Day = {
 const getInitialDay = async () => {
   console.log("Getting initial day");
   // await uploadDays([uploadDay]);
+
+  console.log("uploaded day", { uploadDay });
 
   const day = await getToday();
   console.log("fetched day", { day });

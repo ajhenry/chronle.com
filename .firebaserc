@@ -1,5 +1,9 @@
 {
   "projects": {
-    "default": "spanle"
-  }
+    "default": "spanle",
+    "production": "chronle"
+  },
+  "targets": {},
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
 }
