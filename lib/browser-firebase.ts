@@ -1,5 +1,6 @@
+import { User } from "@/components/types/types";
 import { FirebaseOptions, initializeApp } from "firebase/app";
-import { User, connectAuthEmulator, getAuth } from "firebase/auth";
+import { connectAuthEmulator, getAuth } from "firebase/auth";
 import {
   collection,
   connectFirestoreEmulator,

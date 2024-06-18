@@ -42,8 +42,8 @@ export const SignUpForm: FC<SignUpFormProps> = ({ onShowLogin, onSignUp }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: process.env.NODE_ENV === "development" ? "admin@chronle.com" : "",
+      password: process.env.NODE === "development" ? "password" : "",
     },
   });
 
@@ -61,6 +61,8 @@ export const SignUpForm: FC<SignUpFormProps> = ({ onShowLogin, onSignUp }) => {
       try {
         if (userData && userData.isAnonymous) {
           user = await linkWithCredential(userData, credential);
+        } else {
+          user = await createUserWithEmailAndPassword(auth, email, password);
         }
       } catch (err: any) {
         if (err.message.includes("auth/credential-already-in-use")) {
@@ -74,6 +76,7 @@ export const SignUpForm: FC<SignUpFormProps> = ({ onShowLogin, onSignUp }) => {
         email: user!.user.email,
         displayName: user!.user.displayName,
         isAnonymous: false,
+        admin: process.env.NODE_ENV === "development",
       });
 
       // Need to set the auth cookie too

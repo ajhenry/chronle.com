@@ -36,8 +36,8 @@ export const SignInForm: FC<SignInFormProps> = ({ onShowSignUp }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: process.env.NODE_ENV === "development" ? "admin@chronle.com" : "",
+      password: process.env.NODE === "development" ? "password" : "",
     },
   });
 
