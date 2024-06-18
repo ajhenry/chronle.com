@@ -208,9 +208,7 @@ const PostGame = (props: { attempts: Attempt[]; isWinner: boolean }) => {
           <table className="charts-css bar show-labels show-primary-axis labels-align-inline-center">
             <tbody>
               <tr className="ml-2">
-                <th scope="row" className="mr-2">
-                  1
-                </th>
+                <th scope="row">1</th>
                 <td style={getWidthStyle(getSolvedRatio(1))}>
                   <p className="absolute left-0 ml-[105%] w-full">
                     {getSolvedDayCount(1)}
