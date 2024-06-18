@@ -38,6 +38,14 @@ import {
 } from "react-firebase-hooks/firestore";
 import { useUser } from "reactfire";
 import { Button } from "./ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
 
 const getDelay = (order: number) => {
   return `${order * 250}ms`;
@@ -292,6 +300,7 @@ export function GameArea({ day }: GameAreaProps) {
   } = trpc.submitSolution.useMutation();
   const loading = submissionLoading || attemptDataLoading;
   const [items, setItems] = useState<Event[]>(day.events);
+  const [creditDialogOpen, setCreditDialogOpen] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -388,6 +397,46 @@ export function GameArea({ day }: GameAreaProps) {
           {loading ? "Submitting..." : `Submit (${6 - attemptCount} remaining)`}
         </Button>
       )}
+
+      <div className="text-center">
+        <Dialog>
+          <DialogTrigger>
+            <p className="text-center text-xs mt-2">View Photo Credits</p>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="text-center">Photo Credits</DialogTitle>
+              <DialogDescription>
+                <div className="text-left space-y-2">
+                  {
+                    <ul className="text-left space-y-2">
+                      {day.events.map((event) => (
+                        <li key={event.id}>
+                          {event.name} -{" "}
+                          <a
+                            href={event.imageCredit.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline"
+                          >
+                            {event.imageCredit.name}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  }
+                  <p className="mt-8">
+                    All images from{" "}
+                    <a href="https://unsplash.com" className="underline">
+                      Unsplash
+                    </a>
+                  </p>
+                </div>
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   );
 
