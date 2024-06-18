@@ -1,10 +1,16 @@
-# Chronle
+<h1 align="center">
+  Chronle
+</h1>
 
-A daily game where you drag events into chronological order.
+<h4 align="center">A daily game where you drag events into chronological order.</h4>
 
-<https://chronle.com>
+<p align="center">
+  <a href="https://chronle.com">chronle.com</a>
+</p>
 
-<img src="./docs/resources/screenshot.png" width="250" alt="Demo image">
+<p align="center">
+   <img src="./docs/resources/screenshot.png" width="250" alt="Demo image">
+</p>
 
 ## How to Play
 
