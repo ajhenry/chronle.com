@@ -313,6 +313,8 @@ export const adminRouter = t.router({
         .collection("meta")
         .doc("events")
         .set({
+          // increment the count by the number of events added
+          // FIXME: this will not work if it runs in parallel
           count: currentCount + addedCount,
           usedEvents: Array.from(usedEvents),
         });
