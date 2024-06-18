@@ -23,13 +23,13 @@ export const getImageFromTopic = async (topic: string) => {
     return {
       url: res.response.results[0].urls.small,
       name: res.response.results[0].user.name,
-      unsplashProfile: res.response.results[0].user.links.self,
+      unsplashProfile: res.response.results[0].user.links.html,
     };
   }
 
   return {
     url: res.response.results[1].urls.small,
     name: res.response.results[1].user.name,
-    unsplashProfile: res.response.results[1].user.links.self,
+    unsplashProfile: res.response.results[1].user.links.html,
   };
 };

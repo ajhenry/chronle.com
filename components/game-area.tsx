@@ -355,6 +355,17 @@ export function GameArea({ day }: GameAreaProps) {
     }
   }, [user]);
 
+  const convertUnsplashUrl = (url: string) => {
+    // Our link
+    // https://api.unsplash.com/users/larrybridgesjr
+    // Their link
+    // https://unsplash.com/@andrewbphotos
+    return url.replace(
+      "https://api.unsplash.com/users/",
+      "https://unsplash.com/@"
+    );
+  };
+
   return (
     <div className="md:w-[600px] px-2">
       {postGame && (
@@ -414,7 +425,7 @@ export function GameArea({ day }: GameAreaProps) {
                         <li key={event.id}>
                           {event.name} -{" "}
                           <a
-                            href={event.imageCredit.url}
+                            href={convertUnsplashUrl(event.imageCredit.url)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="underline"
