@@ -262,7 +262,7 @@ const PostGame = (props: { attempts: Attempt[]; isWinner: boolean }) => {
         </div>
         <p className="mt-2 text-center">
           {userData?.stats?.totalDays}{" "}
-          {pluralize("day", userData?.stats.totalDays)} completed
+          {pluralize("day", userData?.stats?.totalDays)} completed
         </p>
       </div>
     </div>
