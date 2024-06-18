@@ -300,8 +300,29 @@ export function GameArea({ day }: GameAreaProps) {
     })
   );
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const solution = items.map((item) => item.id);
+
+    // only create a user if they submit a solution
+    // there might be a race condition here between the user being created
+    // and the solution being submitted but it's not a big deal
+    if (user.status === "success" && !user.data && !user.error) {
+      await signInAnonymously(auth)
+        .then(async (data) => {
+          console.log("signed in anonymously", { uid: data.user.uid });
+          setCookie("auth", (data.user as any).accessToken);
+
+          await createUserData({
+            uid: data.user.uid,
+            email: data.user.email,
+            displayName: data.user.displayName,
+            isAnonymous: true,
+          });
+        })
+        .catch((error) => {
+          console.log("error with anonymous sign in", { error });
+        });
+    }
 
     mutate({ day: day.day, solution });
   };
@@ -320,24 +341,6 @@ export function GameArea({ day }: GameAreaProps) {
   }, [postGame]);
 
   useEffect(() => {
-    if (user.status === "success" && !user.data && !user.error) {
-      signInAnonymously(auth)
-        .then(async (data) => {
-          console.log("signed in anonymously", { uid: data.user.uid });
-          setCookie("auth", (data.user as any).accessToken);
-
-          await createUserData({
-            uid: data.user.uid,
-            email: data.user.email,
-            displayName: data.user.displayName,
-            isAnonymous: true,
-          });
-        })
-        .catch((error) => {
-          console.log("error with anonymous sign in", { error });
-        });
-    }
-
     if (user.data) {
       setCookie("auth", (user.data as any).accessToken);
     }
