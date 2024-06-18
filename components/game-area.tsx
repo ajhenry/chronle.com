@@ -170,11 +170,11 @@ const PostGame = (props: { attempts: Attempt[]; isWinner: boolean }) => {
     ({ "--size": size } as React.CSSProperties);
 
   const highestTotalSolved = Object.values(
-    userData?.stats.solvedMetrics ?? {}
+    userData?.stats?.solvedMetrics ?? {}
   ).reduce((acc, curr) => Math.max(acc, curr), 0);
 
   const getSolvedRatio = (s: number) => {
-    if (!userData?.stats.solvedMetrics?.[s]) {
+    if (!userData?.stats?.solvedMetrics?.[s]) {
       return 0.1;
     }
 
