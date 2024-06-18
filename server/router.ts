@@ -240,6 +240,7 @@ export const adminRouter = t.router({
       const currentMeta = await ctx.db.collection("meta").doc("events").get();
       const currentCount = currentMeta.data()?.count || 0;
       let addedCount = 0;
+      const usedEvents = new Set<string>(currentMeta.data()?.usedEvents || []);
 
       try {
         for (const event of input) {
@@ -291,6 +292,8 @@ export const adminRouter = t.router({
 
           addedCount++;
 
+          usedEvents.add(eventWithImage.name);
+
           console.log("Uploaded event and incremented count", {
             addedCount,
             totalCount: currentCount + addedCount + 1,
@@ -309,6 +312,7 @@ export const adminRouter = t.router({
         .doc("events")
         .set({
           count: FieldValue.increment(addedCount),
+          usedEvents: Array.from(usedEvents),
         });
 
       return { addedCount };
