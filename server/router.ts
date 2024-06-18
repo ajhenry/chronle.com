@@ -125,8 +125,10 @@ export const adminRouter = t.router({
 
       const alreadyUsedNumbers = new Set<number>();
 
+      // sometimes there can be a missing document so we need to keep trying until we get a valid one
+      let i = 0;
       // get random events since they are numbered sequentially
-      for (let i = 0; i < input.count; i++) {
+      while (i < input.count) {
         let randomEvent = Math.floor(Math.random() * eventCount) + 1;
 
         // This is a bit of a hack to ensure we don't get the same event twice
@@ -148,14 +150,12 @@ export const adminRouter = t.router({
           .doc(String(randomEvent))
           .get();
 
-        console.log("Event", { event: event.data() });
-
         if (!event.exists) {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Event does not exist",
-          });
+          console.error("Event does not exist", { randomEvent });
+          continue;
         }
+
+        i++;
 
         dayRandomEvents.push(event.data() as Event);
       }
