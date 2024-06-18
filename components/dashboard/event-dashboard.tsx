@@ -13,7 +13,7 @@ export const EventsDashboard: FC = () => {
   const [eventJSON, setEventJSON] = useState<string>("{}");
 
   const {
-    mutate: submitEvents,
+    mutateAsync: submitEvents,
     isPending: submitLoading,
     data: submitEventsData,
   } = trpc.uploadEvents.useMutation();
@@ -29,12 +29,15 @@ export const EventsDashboard: FC = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log("submit");
     console.log(eventJSON);
     const events = z.array(EventSchema).parse(JSON.parse(eventJSON));
-
-    submitEvents(events);
+    // chunk them up 10 at a time
+    while (events.length) {
+      const currentChunk = events.splice(0, 10);
+      await submitEvents(currentChunk);
+    }
   };
 
   return (
