@@ -1,34 +1,55 @@
-# Venefish 🐟
+# Chronle
 
-### Boilerplate for React TypeScript projects using Next.js, shadcn/ui, Tailwind and Firebase on Vercel!
+A daily game where you drag events into chronological order.
 
-> Now using Next.js app router!
+<https://chronle.com>
 
-This stack is 🔥 because projects can be built and deployed for free until you get to higher tiers within Vercel/Firebase which only happens once you get lots of DAUs.
+<img src="./docs/resources/screenshot.png" width="250" alt="Demo image">
 
-- **Ve**rcel for cloud and automated deployments
-- **Ne**xt.js for better React
-- **Fi**rebase for auth and database (Firestore)
-- **Sh**adcn and Tailwind for UI/styling
+## How to Play
 
-**Let me know if you have any questions! Godspeed.**
+You are given a number of events that you must drag into chronological order. You have up to 6 tries to get all the events in the correct order.
 
-## Setup
+Events that are in the correct spot will turn green. Events that are in the wrong spot will turn a solid neutral color.
 
-1. Make sure your Firebase project has authentication added
-1. Get your public Firebase config and paste it into `components\firebase-providers.tsx`
-1. `npm i` and `npm run dev`
+## Development
 
-The following is only needed if you want to use `firebase/admin` (not part of this project by default)
+1. Get accounts in order in order.
 
-1. Create a new file at the root level called `.env.local`
-1. Define a new variable there called `FIREBASE_ADMIN_SDK`
-1. Get your Firebase service account private key and stringify it then set the above variable to that string
-   > e.g.: `FIREBASE_ADMIN_SDK={"type":"service_account","project_id":"sleeptoken",...}`
+   You will need both a firebase web app and a firebase service account.
 
-### Notes
+   You will need an unsplash developer account to create events from the admin dashboard.
 
-- You can use `api/test.ts` to stringify your private key so you can use in in the environment
-- You need to define the same `FIREBASE_ADMIN_SDK` environment variable in Vercel
+   You will need to create a firebase project and add the firebase configuration to the `.firebaserc` file.
 
-**Created by [⬡ Enesien Software](https://enesien.com)**
+   ```bash
+   npm i -g firebase-tools
+   ```
+
+   Then you will need to setup emulators for the project.
+
+   ```bash
+   firebase login
+   firebase init
+   ```
+
+2. Get `.env` setup.
+
+   Take all the values created from the firebase web and service account and unsplash then add them to the `.env` file.
+
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Run `npm install` to install dependencies.
+4. Run the development server with `npm run dev`.
+
+This project is developed with [Next.js](https://nextjs.org/), [Firebase](https://firebase.google.com/), and [Tailwind CSS](https://tailwindcss.com/).
+
+## License
+
+This is licensed under AGPL-3.0. See the [LICENSE](LICENSE) file for more information.
+
+## Credits
+
+This starter project is based on [Venefish](https://github.com/enesien/venefish) by [enesien software](https://enesien.com/).
