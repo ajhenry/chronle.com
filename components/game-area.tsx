@@ -179,7 +179,7 @@ const PostGame = (props: { attempts: Attempt[]; isWinner: boolean }) => {
     }
 
     const data = Math.min(
-      userData.stats.solvedMetrics[s] / highestTotalSolved + 0.1,
+      userData?.stats?.solvedMetrics?.[s] ?? 0 / highestTotalSolved + 0.1,
       1
     );
 
@@ -187,7 +187,7 @@ const PostGame = (props: { attempts: Attempt[]; isWinner: boolean }) => {
   };
 
   const getSolvedDayCount = (s: number) => {
-    return userData?.stats.solvedMetrics?.[s] ?? "0";
+    return userData?.stats?.solvedMetrics?.[s] ?? "0";
   };
 
   return (
