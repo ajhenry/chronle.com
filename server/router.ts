@@ -165,8 +165,10 @@ export const adminRouter = t.router({
         day: input.day,
         name: input.name,
         description: input.description,
-        events: dayRandomEvents.sort(() => Math.random() - 0.5),
-        solution: dayRandomEvents
+        events: dayRandomEvents
+          .sort(() => Math.random() - 0.5)
+          .sort(() => Math.random() - 0.5), // double sort somehow better
+        solution: [...dayRandomEvents]
           .sort((a, b) => (a.date! < b.date! ? -1 : a.date! > b.date! ? 1 : 0))
           .map((event) => event.id),
       };
