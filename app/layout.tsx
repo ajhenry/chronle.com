@@ -3,6 +3,7 @@ import { MyFirebaseProvider } from "@/components/firebase-providers";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 import { TrpcProvider } from "@/providers/trpc-provider";
+import { Analytics } from "@vercel/analytics/react";
 import "charts.css";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <MyFirebaseProvider>
             <TrpcProvider>
               {children}
+              <Analytics />
               <Toaster />
             </TrpcProvider>
           </MyFirebaseProvider>
