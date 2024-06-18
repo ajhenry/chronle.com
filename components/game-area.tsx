@@ -34,7 +34,7 @@ import pluralize from "pluralize";
 import { useEffect, useState } from "react";
 import {
   useCollectionData,
-  useDocumentDataOnce,
+  useDocumentData,
 } from "react-firebase-hooks/firestore";
 import { useUser } from "reactfire";
 import { Button } from "./ui/button";
@@ -141,7 +141,7 @@ const getTimeTilMidnightUTC = () => {
 const PostGame = (props: { attempts: Attempt[]; isWinner: boolean }) => {
   const user = useUser();
 
-  const [userData] = useDocumentDataOnce<User>(
+  const [userData] = useDocumentData<User>(
     doc(
       collection(getFirestore(browserApp), "users"),
       user.data?.uid ?? "__MISSING__"
