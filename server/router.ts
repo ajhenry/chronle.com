@@ -1,11 +1,13 @@
 import {
   Day,
   DaySchema,
+  Event,
   EventSchema,
   SolutionSchema,
 } from "@/components/types/types";
 import { checkAnswer } from "@/lib/server-firebase";
 import { getImageFromTopic } from "@/lib/unsplash";
+import { TRPCError } from "@trpc/server";
 import { FieldValue } from "firebase-admin/firestore";
 import KSUID from "ksuid";
 import { z } from "zod";
@@ -78,9 +80,115 @@ export const verifierRouter = t.router({
 });
 
 export const adminRouter = t.router({
+  createRandomDay: procedure
+    .input(
+      z.object({
+        day: z.string(),
+        count: z.number(),
+        name: z.string(),
+        description: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      console.log("Creating random day", { input });
+
+      const uid = ctx.uid;
+
+      // Ensure they are an admin
+      const user = await ctx.db.collection("users").doc(uid).get();
+      if (!user.data()?.admin) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not an admin",
+        });
+      }
+
+      // get the number of events in the meta collection
+      const meta = await ctx.db.collection("meta").doc("events").get();
+      const eventCount = meta.data()?.count || 0;
+
+      console.log("Event count", { eventCount });
+
+      if (eventCount < input.count) {
+        console.error("Not enough events to create a day", {
+          eventCount,
+          inputCount: input.count,
+        });
+
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Not enough events to create a day",
+        });
+      }
+
+      const dayRandomEvents: Event[] = [];
+
+      const alreadyUsedNumbers = new Set<number>();
+
+      // get random events since they are numbered sequentially
+      for (let i = 0; i < input.count; i++) {
+        let randomEvent = Math.floor(Math.random() * eventCount) + 1;
+
+        // This is a bit of a hack to ensure we don't get the same event twice
+        while (true) {
+          randomEvent = Math.floor(Math.random() * eventCount) + 1;
+
+          if (alreadyUsedNumbers.has(randomEvent)) {
+            continue;
+          }
+
+          alreadyUsedNumbers.add(randomEvent);
+          break;
+        }
+
+        console.log("Getting random event", { i, randomEvent });
+
+        const event = await ctx.db
+          .collection("events")
+          .doc(String(randomEvent))
+          .get();
+
+        console.log("Event", { event: event.data() });
+
+        if (!event.exists) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Event does not exist",
+          });
+        }
+
+        dayRandomEvents.push(event.data() as Event);
+      }
+
+      const day: Day = {
+        id: KSUID.randomSync().string,
+        day: input.day,
+        name: input.name,
+        description: input.description,
+        events: dayRandomEvents.sort(() => Math.random() - 0.5),
+        solution: dayRandomEvents
+          .sort((a, b) => (a.date! < b.date! ? -1 : a.date! > b.date! ? 1 : 0))
+          .map((event) => event.id),
+      };
+
+      await ctx.db.collection("days").doc(input.day).set(day);
+
+      return { day };
+    }),
   uploadDays: procedure
     .input(z.array(DaySchema))
     .mutation(async ({ input, ctx }) => {
+      const uid = ctx.uid;
+
+      // Ensure they are an admin
+      const user = await ctx.db.collection("users").doc(uid).get();
+      if (!user.data()?.admin) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not an admin",
+        });
+      }
+
       const days = input.map(async (day) => {
         const events = day.events
           .map((event) => ({
@@ -118,6 +226,17 @@ export const adminRouter = t.router({
   uploadEvents: procedure
     .input(z.array(EventSchema))
     .mutation(async ({ input, ctx }) => {
+      const uid = ctx.uid;
+
+      // Ensure they are an admin
+      const user = await ctx.db.collection("users").doc(uid).get();
+      if (!user.data()?.admin) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not an admin",
+        });
+      }
+
       const currentMeta = await ctx.db.collection("meta").doc("events").get();
       const currentCount = currentMeta.data()?.count || 0;
       let addedCount = 0;

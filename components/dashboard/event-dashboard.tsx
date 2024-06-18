@@ -52,13 +52,13 @@ export const EventsDashboard: FC = () => {
 
         <h3 className="text-xl font-semibold mt-4">Event JSON</h3>
         <Textarea
-          placeholder="Day JSON"
+          placeholder="Events JSON"
           rows={20}
           onChange={(e) => setEventJSON(e.target.value)}
         />
         <p>{validateJSON(eventJSON) ?? "Valid Schema"}</p>
         <Button className="mt-4 w-full" onClick={handleSubmit}>
-          Create Day
+          Create Events
         </Button>
 
         <p className="mt-4">

@@ -35,7 +35,7 @@ export function UserNav() {
           <Avatar className="h-10 w-10">
             <AvatarImage
               src={data?.photoURL || "/avatars/04.png"}
-              alt="@shadcn"
+              alt="user-image"
             />
             <AvatarFallback>
               {data?.displayName?.slice(0, 2) || data?.email?.slice(0, 2) || ""}
