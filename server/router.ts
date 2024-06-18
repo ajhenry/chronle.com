@@ -313,7 +313,7 @@ export const adminRouter = t.router({
         .collection("meta")
         .doc("events")
         .set({
-          count: FieldValue.increment(addedCount),
+          count: currentCount + addedCount,
           usedEvents: Array.from(usedEvents),
         });
 
