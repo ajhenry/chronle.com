@@ -29,25 +29,25 @@ export const verifierRouter = t.router({
 
       const res = await checkAnswer(input.day, input.solution);
 
-      // Write to the database for attempts
-      await ctx.db
-        .collection(`attempts/${input.day}/${uid}`)
-        .doc(attemptId)
-        .set({
-          solution: input.solution,
-          timestamp,
-          result: res,
-        });
+      const attemptPath = `attempts/${input.day}/${input.dayId}/${uid}`;
 
       // Now get the standings
-      const standings = await ctx.db
-        .collection(`attempts/${input.day}/${uid}`)
-        .get();
+      const standing = await ctx.db.doc(attemptPath).get();
+      const attemptNumber = standing.exists ? standing.data()?.count + 1 : 1;
 
-      const metricsDay = standings.size > 5 ? 6 : standings.size;
+      // Write to the database for attempts
+      await ctx.db.doc(attemptPath).set({
+        id: attemptId,
+        solution: input.solution,
+        timestamp,
+        count: attemptNumber,
+        result: res,
+      });
+
+      const metricsDay = attemptNumber > 5 ? 6 : attemptNumber;
 
       // Increment their stats for their profile
-      if (res.solved || standings.size > 5) {
+      if (res.solved || attemptNumber > 5) {
         await ctx.db
           .collection("users")
           .doc(uid)
@@ -63,7 +63,7 @@ export const verifierRouter = t.router({
                 [input.day]: {
                   solved: true,
                   timestamp,
-                  attempts: standings.size,
+                  attempts: attemptNumber,
                 },
               },
             },
@@ -73,7 +73,7 @@ export const verifierRouter = t.router({
 
       return {
         lastAttempt: { solution: input.solution, timestamp, result: res },
-        attempts: standings.size,
+        attempts: attemptNumber,
         solved: res.solved,
       };
     }),

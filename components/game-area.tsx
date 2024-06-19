@@ -32,10 +32,7 @@ import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import pluralize from "pluralize";
 import { useEffect, useState } from "react";
-import {
-  useCollectionData,
-  useDocumentData,
-} from "react-firebase-hooks/firestore";
+import { useDocumentData } from "react-firebase-hooks/firestore";
 import { useUser } from "reactfire";
 import { Button } from "./ui/button";
 import {
@@ -146,7 +143,7 @@ const getTimeTilMidnightUTC = () => {
   return tomorrow.getTime() - now.getTime();
 };
 
-const PostGame = (props: { attempts: Attempt[]; isWinner: boolean }) => {
+const PostGame = (props: { isWinner: boolean }) => {
   const user = useUser();
 
   const [userData] = useDocumentData<User>(
@@ -282,25 +279,22 @@ interface GameAreaProps {
 export function GameArea({ day }: GameAreaProps) {
   const auth = getAuth(browserApp);
   const user = useUser();
-  const [attemptData, attemptDataLoading, error] = useCollectionData<Attempt>(
-    collection(
+  const [latestAttempt, latestAttemptLoading, error] = useDocumentData<Attempt>(
+    doc(
       getFirestore(browserApp),
       "attempts",
       day.day,
+      day.id,
       auth.currentUser?.uid ?? "__MISSING__"
     ) as any
   );
 
-  const latestAttempt = attemptData?.[attemptData?.length - 1];
+  console.log({ latestAttempt, latestAttemptLoading, error });
 
-  const {
-    data: submittedSolution,
-    isPending: submissionLoading,
-    mutate,
-  } = trpc.submitSolution.useMutation();
-  const loading = submissionLoading || attemptDataLoading;
+  const { isPending: submissionLoading, mutate } =
+    trpc.submitSolution.useMutation();
+  const loading = submissionLoading || latestAttemptLoading;
   const [items, setItems] = useState<Event[]>(day.events);
-  const [creditDialogOpen, setCreditDialogOpen] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -333,13 +327,12 @@ export function GameArea({ day }: GameAreaProps) {
         });
     }
 
-    mutate({ day: day.day, solution });
+    mutate({ day: day.day, solution, dayId: day.id });
   };
 
-  const attemptCount = attemptData?.length ?? 0;
+  const attemptCount = latestAttempt?.count ?? 0;
   const isWinner = Boolean(attemptCount <= 6);
-  const postGame =
-    attemptCount > 6 || Boolean(attemptData?.[attemptCount - 1]?.result.solved);
+  const postGame = attemptCount > 6 || Boolean(latestAttempt?.result.solved);
 
   useEffect(() => {
     if (postGame) {
@@ -368,9 +361,7 @@ export function GameArea({ day }: GameAreaProps) {
 
   return (
     <div className="md:w-[600px] px-2">
-      {postGame && (
-        <PostGame attempts={attemptData ?? []} isWinner={isWinner} />
-      )}
+      {postGame && <PostGame isWinner={isWinner} />}
       <h3 className="text-lg text-center font-medium">{day.description}</h3>
       <p className="text-center text-sm">Oldest event first</p>
       <div className="mt-2">

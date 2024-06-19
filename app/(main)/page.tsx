@@ -61,17 +61,7 @@ const Home = async () => {
     console.log("Seeding the day for development");
     await seedDatabase();
   }
-  const [day, latestSolution] = await Promise.all([
-    getInitialDay(),
-    getLatestSolution(),
-  ]);
-
-  if (latestSolution && day) {
-    // Set the order of events based on the last solution submitted
-    day.events = latestSolution.solution.map(
-      (eventId) => day.events.find((event) => event.id === eventId)!
-    );
-  }
+  const day = await getInitialDay();
 
   return (
     <div className="grow flex flex-col items-center justify-evenly">

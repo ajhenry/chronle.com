@@ -28,6 +28,7 @@ export type Day = z.infer<typeof DaySchema>;
 
 export const SolutionSchema = z.object({
   day: z.string(),
+  dayId: z.string(),
   solution: z.array(z.string()),
 });
 
@@ -61,6 +62,8 @@ export const AttemptSchema = z.object({
   }),
   solution: z.array(z.string()),
   timestamp: z.string(),
+  count: z.number(),
+  id: z.string(),
 });
 
 export type Attempt = z.infer<typeof AttemptSchema>;
