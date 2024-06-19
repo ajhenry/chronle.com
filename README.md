@@ -20,7 +20,7 @@ Events that are in the correct spot will turn green. Events that are in the wron
 
 ## Development
 
-1. Get accounts in order in order.
+1. Get accounts in order to develop.
 
    You will need both a firebase web app and a firebase service account.
 
@@ -49,6 +49,8 @@ Events that are in the correct spot will turn green. Events that are in the wron
 
 3. Run `npm install` to install dependencies.
 4. Run the development server with `npm run dev`.
+
+There are bound to be bugs so don't be afraid to file an issue.
 
 This project is developed with [Next.js](https://nextjs.org/), [Firebase](https://firebase.google.com/), and [Tailwind CSS](https://tailwindcss.com/).
 
