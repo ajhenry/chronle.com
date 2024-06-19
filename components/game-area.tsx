@@ -300,8 +300,6 @@ export function GameArea({ day }: GameAreaProps) {
     ) as any
   );
 
-  console.log({ latestAttempt, latestAttemptLoading, error });
-
   const { isPending: submissionLoading, mutate } =
     trpc.submitSolution.useMutation();
   const loading = submissionLoading || latestAttemptLoading;
