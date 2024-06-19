@@ -37,6 +37,16 @@ export const verifierRouter = t.router({
         ? (standing.data()?.count ?? 0) + 1
         : 1;
 
+      // don't allow more than 7 attempts to solve
+      if (attemptNumber > 7) {
+        console.error("Too many attempts", { attemptNumber });
+        return {
+          lastAttempt: { solution: input.solution, timestamp, result: res },
+          attempts: attemptNumber,
+          solved: true,
+        };
+      }
+
       // Write to the database for attempts
       await ctx.db.doc(attemptPath).set({
         id: attemptId,

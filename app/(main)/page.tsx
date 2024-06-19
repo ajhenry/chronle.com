@@ -61,6 +61,7 @@ const Home = async () => {
     console.log("Seeding the day for development");
     await seedDatabase();
   }
+
   const day = await getInitialDay();
 
   return (
