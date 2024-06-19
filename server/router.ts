@@ -47,7 +47,7 @@ export const verifierRouter = t.router({
       const metricsDay = attemptNumber > 5 ? 6 : attemptNumber;
 
       // Increment their stats for their profile
-      if (res.solved || attemptNumber > 5) {
+      if (res.solved || attemptNumber > 6) {
         await ctx.db
           .collection("users")
           .doc(uid)
