@@ -33,7 +33,9 @@ export const verifierRouter = t.router({
 
       // Now get the standings
       const standing = await ctx.db.doc(attemptPath).get();
-      const attemptNumber = standing.exists ? standing.data()?.count + 1 : 1;
+      const attemptNumber = standing.exists
+        ? (standing.data()?.count ?? 0) + 1
+        : 1;
 
       // Write to the database for attempts
       await ctx.db.doc(attemptPath).set({
