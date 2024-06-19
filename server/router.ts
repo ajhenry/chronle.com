@@ -27,6 +27,8 @@ export const verifierRouter = t.router({
       const timestamp = new Date().toISOString();
       const attemptId = KSUID.randomSync().string;
 
+      console.log("Submitting solution", { input, uid });
+
       const res = await checkAnswer(input.day, input.solution);
 
       const attemptPath = `attempts/${input.day}/${input.dayId}/${uid}`;

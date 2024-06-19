@@ -137,10 +137,19 @@ export function SortableItem(props: {
 // Returns in milliseconds
 const getTimeTilMidnightUTC = () => {
   const now = new Date();
-  const tomorrow = new Date(now);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  tomorrow.setHours(0, 0, 0, 0);
-  return tomorrow.getTime() - now.getTime();
+  const nowUTC = new Date(now.getTime());
+  const midnightUTC = new Date(
+    Date.UTC(
+      nowUTC.getUTCFullYear(),
+      nowUTC.getUTCMonth(),
+      nowUTC.getUTCDate() + 1,
+      0,
+      0,
+      0
+    )
+  );
+
+  return midnightUTC.getTime() - nowUTC.getTime();
 };
 
 const PostGame = (props: { isWinner: boolean }) => {
@@ -201,11 +210,13 @@ const PostGame = (props: { isWinner: boolean }) => {
         {props.isWinner ? "Congrats" : "Nice Try"}
       </h1>
       <h2 className="text-2xl font-semibold">
-        Next Game in {z(hours)}:{z(mins)}:{z(secs)}
+        {hours && mins && secs
+          ? `Next Game in ${z(hours)}:${z(mins)}:${z(secs)}`
+          : "Refresh the page to see the next game"}
       </h2>
       <p className="text-center">
         You have completed all the challenges for today. Come back tomorrow for
-        more!
+        more.
       </p>
       <div>
         <h3 className="text-center text-xl font-semibold">Your Stats</h3>
