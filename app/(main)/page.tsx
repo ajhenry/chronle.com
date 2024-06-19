@@ -97,7 +97,7 @@ const Home = async () => {
             </p>
             <Link
               target="_blank"
-              href="https://github.com/ajhenry/chronle"
+              href="https://github.com/ajhenry/chronle.com"
               rel="noopener noreferrer"
             >
               <Button size="lg" variant="link">
