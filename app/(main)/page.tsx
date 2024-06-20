@@ -11,6 +11,8 @@ import {
 import { cookies } from "next/headers";
 import Link from "next/link";
 
+export const revalidate = 3600; // revalidate the data at most every hour
+
 const seedDatabase = async () => {
   await uploadDays([seedDay]);
   await createUserData(seedUser);
