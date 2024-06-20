@@ -33,6 +33,16 @@ import Image from "next/image";
 import pluralize from "pluralize";
 import { useEffect, useState } from "react";
 import { useDocumentData } from "react-firebase-hooks/firestore";
+import {
+  EmailIcon,
+  EmailShareButton,
+  FacebookIcon,
+  FacebookShareButton,
+  LinkedinIcon,
+  LinkedinShareButton,
+  TwitterShareButton,
+  XIcon,
+} from "react-share";
 import { useUser } from "reactfire";
 import { Button } from "./ui/button";
 import {
@@ -152,7 +162,11 @@ const getTimeTilMidnightUTC = () => {
   return midnightUTC.getTime() - nowUTC.getTime();
 };
 
-const PostGame = (props: { isWinner: boolean }) => {
+const PostGame = (props: {
+  day: Day;
+  attemptCount: number;
+  isWinner: boolean;
+}) => {
   const user = useUser();
 
   const [userData] = useDocumentData<User>(
@@ -278,6 +292,67 @@ const PostGame = (props: { isWinner: boolean }) => {
           {userData?.stats?.totalDays}{" "}
           {pluralize("day", userData?.stats?.totalDays)} completed
         </p>
+        <div className="flex flex-row justify-center items-center space-x-2 mt-2">
+          <TwitterShareButton
+            url="https://chronle.com/"
+            title={`I completed the Chronle for ${new Date(
+              props.day.day
+            ).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })} in ${props.attemptCount} 🤓`}
+          >
+            <XIcon className="h-10 w-10 rounded-full">
+              https://chronle.com/
+            </XIcon>
+          </TwitterShareButton>
+          <FacebookShareButton
+            url="https://chronle.com/"
+            title={`I completed the Chronle for ${new Date(
+              props.day.day
+            ).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })} in ${props.attemptCount} 🤓`}
+          >
+            <FacebookIcon className="h-10 w-10 rounded-full">
+              https://chronle.com/
+            </FacebookIcon>
+          </FacebookShareButton>
+          <LinkedinShareButton
+            url="chronle.com"
+            title={`I completed the Chronle in ${props.attemptCount} 😎`}
+            summary={`I completed the Chronle for ${new Date(
+              props.day.day
+            ).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })} in ${props.attemptCount} 🤓`}
+            source="https://chronle.com/"
+          >
+            <LinkedinIcon className="h-10 w-10 rounded-full" />
+          </LinkedinShareButton>
+
+          <EmailShareButton
+            url="https://chronle.com/"
+            subject={`Chronle for ${new Date(props.day.day).toLocaleDateString(
+              "en-US",
+              {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              }
+            )}`}
+            body={`I just completed the Chronle in ${props.attemptCount}`}
+          >
+            <EmailIcon className="h-10 w-10 rounded-full">
+              https://chronle.com/
+            </EmailIcon>
+          </EmailShareButton>
+        </div>
       </div>
     </div>
   );
@@ -370,7 +445,9 @@ export function GameArea({ day }: GameAreaProps) {
 
   return (
     <div className="md:w-[600px] px-2">
-      {postGame && <PostGame isWinner={isWinner} />}
+      {postGame && (
+        <PostGame isWinner={isWinner} attemptCount={attemptCount} day={day} />
+      )}
       <h3 className="text-lg text-center font-medium">{day.description}</h3>
       <p className="text-center text-sm">Oldest event first</p>
       <div className="mt-2">
@@ -447,6 +524,7 @@ export function GameArea({ day }: GameAreaProps) {
             </DialogHeader>
           </DialogContent>
         </Dialog>
+        d
       </div>
     </div>
   );

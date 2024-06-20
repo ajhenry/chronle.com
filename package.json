@@ -51,6 +51,7 @@
     "react-dom": "latest",
     "react-firebase-hooks": "^5.1.1",
     "react-hook-form": "^7.50.1",
+    "react-share": "^5.1.0",
     "reactfire": "^4.2.3",
     "superjson": "^2.2.1",
     "tailwind-merge": "^1.14.0",
