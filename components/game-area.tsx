@@ -524,7 +524,6 @@ export function GameArea({ day }: GameAreaProps) {
             </DialogHeader>
           </DialogContent>
         </Dialog>
-        d
       </div>
     </div>
   );
