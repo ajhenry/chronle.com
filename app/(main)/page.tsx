@@ -1,4 +1,4 @@
-import { GameArea } from "@/components/game-area";
+import GameArea from "@/components/game-area";
 import { Button } from "@/components/ui/button";
 import { createUserData } from "@/lib/browser-firebase";
 import { seedDay, seedUser } from "@/lib/seed";

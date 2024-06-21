@@ -32,6 +32,7 @@ import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import pluralize from "pluralize";
 import { useEffect, useState } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import {
   EmailIcon,
@@ -44,6 +45,7 @@ import {
   XIcon,
 } from "react-share";
 import { useUser } from "reactfire";
+import { useLocalStorage } from "usehooks-ts";
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -62,7 +64,7 @@ export function SortableItem(props: {
   id: string;
   event: Event;
   order: number;
-  attempt?: Attempt;
+  attempt: Attempt | undefined | null;
   postGame: boolean;
 }) {
   const [previousIndex, setPreviousIndex] = useState(props.order);
@@ -362,23 +364,33 @@ interface GameAreaProps {
   day: Day;
 }
 
-export function GameArea({ day }: GameAreaProps) {
+function GameArea({ day }: GameAreaProps) {
   const auth = getAuth(browserApp);
   const user = useUser();
-  const [latestAttempt, latestAttemptLoading, error] = useDocumentData<Attempt>(
-    doc(
-      getFirestore(browserApp),
-      "attempts",
-      day.day,
-      day.id,
-      auth.currentUser?.uid ?? "__MISSING__"
-    ) as any
-  );
+  const [latestLocalAttempt, setLatestLocalAttempt, clearLatestLocalAttempt] =
+    useLocalStorage<Attempt | null>(`attempt-${day.id}`, null);
+  const [latestServerAttempt, latestAttemptLoading, error] =
+    useDocumentData<Attempt>(
+      doc(
+        getFirestore(browserApp),
+        "attempts",
+        day.day,
+        day.id,
+        auth.currentUser?.uid ?? "__MISSING__"
+      ) as any
+    );
+
+  const latestAttempt = latestServerAttempt ?? latestLocalAttempt;
 
   const { isPending: submissionLoading, mutate } =
     trpc.submitSolution.useMutation();
-  const loading = submissionLoading || latestAttemptLoading;
-  const [items, setItems] = useState<Event[]>(day.events);
+  const loading =
+    submissionLoading || (latestAttemptLoading && !latestLocalAttempt);
+  const [items, setItems] = useState<Event[]>(
+    latestLocalAttempt
+      ? day.solution.map((eventId) => day.events.find((e) => e.id === eventId)!)
+      : day.events
+  );
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -419,6 +431,14 @@ export function GameArea({ day }: GameAreaProps) {
   const postGame = attemptCount > 6 || Boolean(latestAttempt?.result.solved);
 
   useEffect(() => {
+    setItems(
+      latestAttempt?.solution.map(
+        (eventId) => day.events.find((e) => e.id === eventId)!
+      ) ?? day.events
+    );
+  }, [latestAttempt]);
+
+  useEffect(() => {
     if (postGame) {
       setItems(
         day.solution.map((eventId) => day.events.find((e) => e.id === eventId)!)
@@ -429,6 +449,15 @@ export function GameArea({ day }: GameAreaProps) {
   useEffect(() => {
     if (user.data) {
       setCookie("auth", (user.data as any).accessToken);
+    }
+    console.log("user changed", { user });
+
+    // We need to check the localstorage if the user auth state changes
+    if (user.status === "success" && !user.data && !user.error) {
+      const localAttempt = localStorage.getItem(`attempt-${day.id}`);
+      if (localAttempt) {
+        clearLatestLocalAttempt();
+      }
     }
   }, [user]);
 
@@ -459,7 +488,7 @@ export function GameArea({ day }: GameAreaProps) {
           id="game-area"
         >
           <SortableContext items={items} strategy={verticalListSortingStrategy}>
-            <div className="space-y-2">
+            <div className="space-y-2" suppressHydrationWarning>
               {items.map((item, index) => (
                 <SortableItem
                   key={item.id}
@@ -541,3 +570,27 @@ export function GameArea({ day }: GameAreaProps) {
     }
   }
 }
+
+const ErrorFallback = () => {
+  return (
+    <div className="flex flex-col items-center">
+      <h3 className="max-w-4xl font-heading font-semibold text-2xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tighter">
+        Game Error
+      </h3>
+      <p className="text-center px-12 sm:px-2 mt-2">
+        Looks like there was an error while loading the Chronle, please check
+        back later
+      </p>
+    </div>
+  );
+};
+
+const GameAreaWrapper = ({ day }: GameAreaProps) => {
+  return (
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <GameArea day={day} />
+    </ErrorBoundary>
+  );
+};
+
+export default GameAreaWrapper;
