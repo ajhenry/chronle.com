@@ -228,5 +228,5 @@ export const createRandomDay = async ({
 
   await adminDB.collection("days").doc(day).set(newDay);
 
-  return day;
+  return newDay;
 };
