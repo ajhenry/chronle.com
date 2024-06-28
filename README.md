@@ -54,6 +54,10 @@ There are bound to be bugs so don't be afraid to file an issue.
 
 This project is developed with [Next.js](https://nextjs.org/), [Firebase](https://firebase.google.com/), and [Tailwind CSS](https://tailwindcss.com/).
 
+## Contributing
+
+All contributions are welcome! Please file an issue or create a pull request.
+
 ## License
 
 This is licensed under AGPL-3.0. See the [LICENSE](LICENSE) file for more information.
