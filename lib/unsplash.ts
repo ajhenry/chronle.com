@@ -21,15 +21,15 @@ export const getImageFromTopic = async (topic: string) => {
 
   if (res.response.results.length === 1) {
     return {
-      url: res.response.results[0].urls.small,
+      url: `${res.response.results[0].urls.small}?utm_source=chronle&utm_medium=referral`,
       name: res.response.results[0].user.name,
-      unsplashProfile: res.response.results[0].user.links.html,
+      unsplashProfile: `${res.response.results[0].user.links.html}?utm_source=chronle&utm_medium=referral`,
     };
   }
 
   return {
-    url: res.response.results[1].urls.small,
+    url: `${res.response.results[1].urls.small}?utm_source=chronle&utm_medium=referral`,
     name: res.response.results[1].user.name,
-    unsplashProfile: res.response.results[1].user.links.html,
+    unsplashProfile: `${res.response.results[1].user.links.html}?utm_source=chronle&utm_medium=referral`,
   };
 };
