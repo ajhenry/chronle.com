@@ -87,6 +87,17 @@ export const getToday = async () => {
     const doc = db.collection("days").doc(dayTimestamp);
     const snapshot = await doc.get();
 
+    if (!snapshot.exists) {
+      console.log("No day found for today");
+      console.log("Creating new day", { dayTimestamp });
+      return await createRandomDay({
+        count: 6,
+        day: dayTimestamp,
+        name: "random-day",
+        description: "Rearrange the items in the order they occurred.",
+      });
+    }
+
     return snapshot.data() as Day;
   } catch (error) {
     console.error("Error getting today's day", { error });
@@ -143,4 +154,79 @@ export const checkAnswer = async (date: string, events: string[]) => {
     solved,
     correct,
   };
+};
+
+export const createRandomDay = async ({
+  count,
+  day,
+  name,
+  description,
+}: {
+  count: number;
+  day: string;
+  name: string;
+  description: string;
+}) => {
+  console.log("Creating random day", { count });
+  // get the number of events in the meta collection
+  const meta = await adminDB.collection("meta").doc("events").get();
+  const eventCount = meta.data()?.count || 0;
+
+  console.log("Event count", { eventCount });
+
+  const dayRandomEvents: Event[] = [];
+
+  const alreadyUsedNumbers = new Set<number>();
+
+  // sometimes there can be a missing document so we need to keep trying until we get a valid one
+  let i = 0;
+  // get random events since they are numbered sequentially
+  while (i < count) {
+    let randomEvent = Math.floor(Math.random() * eventCount) + 1;
+
+    // This is a bit of a hack to ensure we don't get the same event twice
+    while (true) {
+      randomEvent = Math.floor(Math.random() * eventCount) + 1;
+
+      if (alreadyUsedNumbers.has(randomEvent)) {
+        continue;
+      }
+
+      alreadyUsedNumbers.add(randomEvent);
+      break;
+    }
+
+    console.log("Getting random event", { i, randomEvent });
+
+    const event = await adminDB
+      .collection("events")
+      .doc(String(randomEvent))
+      .get();
+
+    if (!event.exists) {
+      console.error("Event does not exist", { randomEvent });
+      continue;
+    }
+
+    i++;
+
+    dayRandomEvents.push(event.data() as Event);
+  }
+
+  const newDay: Day = {
+    id: KSUID.randomSync().string,
+    day: day,
+    name: name,
+    description: description,
+    events: dayRandomEvents
+      .sort(() => Math.random() - 0.5)
+      .sort(() => Math.random() - 0.5), // double sort somehow better
+    solution: [...dayRandomEvents]
+      .sort((a, b) => (a.date! < b.date! ? -1 : a.date! > b.date! ? 1 : 0))
+      .map((event) => event.id),
+  };
+
+  await adminDB.collection("days").doc(day).set(newDay);
+
+  return day;
 };
